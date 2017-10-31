@@ -1,5 +1,6 @@
 \documentclass{scrartcl}
 \usepackage[utf8]{inputenc}
+\usepackage[colorlinks, linkcolor = black, citecolor = black, filecolor = black, urlcolor = blue]{hyperref} 
 
 \title{TAV - Report}
 \subtitle{Project: Luminosus}
@@ -26,11 +27,27 @@
 
 \subsection{Learning from failures}
 
-\begin{itemize}
-	\item select 3-5 random failures from bug tracker
-	\item discuss type of failure (preventable, complexity-related, intelligent)
-	\item (failures detected during semester)
-\end{itemize}
+\paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/2}{\#2} Connection to Eos stopped working:}
+
+After a while the network connection of the software to the lighting stopped working. The user was not able to continue using the application for the show even after restarting everything.
+While the fault is not yet known the issue is probably complexity related. Many different devices were involved and it is not clear if the problem was caused by this software a  different failing part in the system.
+
+
+\paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/3}{\#3} Faders not updated:}
+
+The user described an issue where the fader position were not updated correctly after switching the page.
+This issues can be categorized as preventable as the fault was a single missing line of code that could have been found by unit tests that cover all branches of the code.
+
+
+\paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/4}{\#4} Fullscreen on iOS not working:}
+
+The issues states that the fullscreen button is not working correctly on the iOS platform. The failure is visible as too large UI elements that render the application unusable.
+On the one hand the fault can be categorized as preventable since it could be detected by a simple unit test that compares the scale property before and after the operation.
+On the other hand it is also a type of intelligent fault since the real problem was the pure existence of a fullscreen button on a mobile operating system.
+
+\paragraph{Conclusion}
+In general the introduction of unit tests would be a valuable addition to the existing code base. Furthermore integration tests for typical user scenarios would help to prevent some kind of faults. Last but not least for maintaining so many different platforms the user feedback is an important part in the process of V\&V.
+
 
 \subsection{Five Basic V\&V Questions}
 
@@ -38,6 +55,40 @@
 	\item How would we answer them?
 	\item (compare at the end of the semester)
 \end{itemize}
+
+\paragraph{When do V\&V start?  When are they complete?}
+
+Validation started right in the beginning. The project was validated on a daily basis  due to a lot of contact to the supervisor. The specification was adjusted very frequently to ensure that the features that were developed were suitable for the projects goal.
+
+Verification began early, too, in the form of static code analysis provided by the IDE (Qt Creator) and CLang. The development of tests did not start till the begin of this V\&V project.
+
+The process of V\&V does not end till the end of the lifetime of the product. In this case as long as the software is maintained.
+
+\paragraph{What particular techniques should be applied during development?}
+
+Static code analysis is very good applicable for C++ due to strict type declarations. 
+
+Continuous Integration should be applied to the project since it will be used on various platforms. Furthermore automated unit testing will be applied during the semester.
+
+Additionally profiling the memory consumption can help finding memory leaks and performance benchmarks make sure that the specification is met in terms of latency and responsibility.
+
+Integration \& System Tests?
+
+\paragraph{How can we asses the readiness of the product?}
+
+The readiness is assessed by using the defined features of the specification and their current implementation status. Before a release is considered ready it should be at least tested manually in a typical use case scenario.
+
+Furthermore open issues are a hint that the product is not yet ready.
+
+\paragraph{How can we control the quality of successive releases?}
+
+To ensure that successive releases do not introduce new faults a pre-release policy can be established to let a small group of beta users test the system before it is released to the public.
+
+\paragraph{How can the development process itself be improved?}
+
+Increasing emphasis on applying various V\&V techniques during further development will help to improve overall code quality. 
+
+Furthermore the development process can be improved by introducing a second developer to the project. Thus pair programming and code reviews can be established to help finding flaws. In addition maintaining the documentation will lead to a better process.
 
 
 \end{document}
