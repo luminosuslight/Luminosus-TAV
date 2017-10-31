@@ -1,5 +1,11 @@
 \documentclass{scrartcl}
+% deutsche Silbentrennung
+\usepackage[ngerman]{babel}
+% wegen deutschen Umlauten
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
 \usepackage[colorlinks, linkcolor = black, citecolor = black, filecolor = black, urlcolor = blue]{hyperref} 
 
 \title{TAV - Report}
@@ -14,16 +20,21 @@
 
 \subsection{Introduction}
 
-\begin{itemize}
-	\item problem description and solution
-	\item our roles (developer / tester)
-	\item languages
-	\item application type
-	\item size
-	\item available artifacts
-	\item development paradigm
-	\item testing status
-\end{itemize}
+Extending the functionality of a lighting desk can be a difficult and time consuming task. To make it more easy to integrate and test new features the idea was to create a separate modular software platform that is connected via network to the lighting console. As a solution for this "Luminosus" was developed.
+
+The main project development was done by Tim Henning while writing his bachelor thesis. He is the only developer of the project till now. For this V\&V project Johannes Schneider joins the project as a developer and tester.
+
+The programming language used is C++ 11 with syntax additions by Qt. The user interface part uses the descriptive language QML that includes function definitions in JavaScript.
+
+The application is intended to be used by end users. It runs as a desktop application on Windows and MacOS and as an app on Android and iOS.
+
+The existing code base consists of ca. 40k LOC.
+
+Available artifacts are the source code, documentation, changelog, issue tracker, manual and in addition the Bachelor thesis \textit{Entwicklung einer modularen Benutzeroberfl\"ache als zus\"atzliche Bedieneinheit einer Lichtkonsole} including a requirement analysis and a discussion of the architectural decisions.
+
+No specific development paradigm was used.
+
+Manual tests are performed and static code analysis is provided by the IDE.
 
 \subsection{Learning from failures}
 
@@ -51,11 +62,6 @@ In general the introduction of unit tests would be a valuable addition to the ex
 
 \subsection{Five Basic V\&V Questions}
 
-\begin{itemize}
-	\item How would we answer them?
-	\item (compare at the end of the semester)
-\end{itemize}
-
 \paragraph{When do V\&V start?  When are they complete?}
 
 Validation started right in the beginning. The project was validated on a daily basis  due to a lot of contact to the supervisor. The specification was adjusted very frequently to ensure that the features that were developed were suitable for the projects goal.
@@ -72,7 +78,7 @@ Continuous Integration should be applied to the project since it will be used on
 
 Additionally profiling the memory consumption can help finding memory leaks and performance benchmarks make sure that the specification is met in terms of latency and responsibility.
 
-Integration \& System Tests?
+In the end a formal verification of standardized components such as the network protocol implementations should be applied.
 
 \paragraph{How can we asses the readiness of the product?}
 
