@@ -16,7 +16,8 @@
 
 \maketitle
 
-\section{Milestone 0}
+\setcounter{section}{-1}
+\section{Application Selection}
 
 \subsection{Introduction}
 
@@ -96,5 +97,36 @@ Increasing emphasis on applying various V\&V techniques during further developme
 
 Furthermore the development process can be improved by introducing a second developer to the project. Thus pair programming and code reviews can be established to help finding flaws. In addition maintaining the documentation will lead to a better process.
 
+
+\section{Analysis}
+
+\subsection{Human-based Static Analysis}
+
+\paragraph{Peer Review}
+\begin{itemize}
+	\item finding faults?
+	\item code improvements?
+	\item supports understanding / communication?
+	\item How could you organize peer review in your project in order to promote fault detection?
+\end{itemize}
+
+\paragraph{Tools}
+Search for tool support to perform peer review in your project and evaluate. Which features are supported? Which features would be desirable, but are not supported?
+
+\subsection{Automated Static Analysis}
+
+\paragraph{Evaluation of Tools}
+How good is ASA in detecting faults in your project? How difficult is triaging?
+
+\paragraph{Type of Inaccuracy}
+Investigate if the ASA tools you used for fault detection assume some
+pessimistic, optimistic inaccuracy or both and explain the consequences.
+
+
+\subsection{Interaction between Human-Based and Automated SA}
+
+How can ASA support human-based SA activities in your project?
+
+How can human-based SA support ASA in your project?
 
 \end{document}
