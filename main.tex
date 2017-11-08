@@ -131,7 +131,9 @@ Other than Clang, CppCheck found not initialized member variables. But even whil
 Investigate if the ASA tools you used for fault detection assume some
 pessimistic, optimistic inaccuracy or both and explain the consequences.
 
-TODO
+While investigating the design and philosophy of the Clang static analyzer the developers clearly stated, that the tool was made to reported as less false positives as possible. However, they are more concerned about not finding a fault so they would tolerate a moderate amount of false alarms. This leaves us with the conclusion, that the Clang static analyzer is mainly incorporating pessimistic inaccuracy, which results in false alarms. However, the tool can be configured to also include optimistic inaccuracy if needed. This can be realized by adding filters so that some checks will become less strict. This behavior will result in some faults not being detected any longer.
+
+\emph{TOOD: Add investigation of CppCheck here}
 
 \subsection{Interaction between Human-Based and Automated SA}
 
