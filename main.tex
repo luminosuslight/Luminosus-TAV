@@ -112,9 +112,10 @@ The previously known bugs were found and we could even find a case where the des
 A good peer review is organized a few days before so that everyone can get into the code. Therefore the discussion can start right away. It also helps to question even minor things so that the author can either explain his thoughts or comes to really think of it for the first time.
 
 \paragraph{Tools}
-Search for tool support to perform peer review in your project and evaluate. Which features are supported? Which features would be desirable, but are not supported?
 
-A tool that is well suited for peer reviews is the review function of GitHub. It allows to mark persons that have to review i.e. a pull request before it can be merged. Comments can be made for each line of code individually. It can integrate various different tools to enhance the experience and incorporate automated SA, too.
+A tool that is well suited for human-based peer reviews is the review function of GitHub. It allows for example to mark persons which have to review a pull request before it can be merged. Comments can be made for each line of code individually and the author can respond to them directly. It can also integrate various different tools and incorporate dynamical tests of continuous integration system like Travis CI, too.
+
+While it is comfortable for the team members that these functions are integrated into the GitHub website and work in every browser, this means that no code exploration features known from various IDEs are available. As a beginning it would be nice for example to be able to jump to a function declaration right from the review page of GitHub. It would help the code understanding a lot.
 
 \subsection{Automated Static Analysis}
 
@@ -125,15 +126,15 @@ Both tools are well suited for C++ code and are supported by the IDE (Qt Creator
 
 On the in hand Clang helped to improve the code by finding a possible nullpointer derefence caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults.
 
-Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives many of them were detected due to bugs in CppCheck.
+Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives many of them were shown due to bugs in CppCheck.
 
 \paragraph{Type of Inaccuracy}
-Investigate if the ASA tools you used for fault detection assume some
-pessimistic, optimistic inaccuracy or both and explain the consequences.
 
-While investigating the design and philosophy of the Clang static analyzer the developers clearly stated, that the tool was made to reported as less false positives as possible. However, they are more concerned about not finding a fault so they would tolerate a moderate amount of false alarms. This leaves us with the conclusion, that the Clang static analyzer is mainly incorporating pessimistic inaccuracy, which results in false alarms. However, the tool can be configured to also include optimistic inaccuracy if needed. This can be realized by adding filters so that some checks will become less strict. This behavior will result in some faults not being detected any longer.
+While investigating the design and philosophy of the Clang static analyzer the developers clearly stated that the tool was made to reported as less false positives as possible. However, they are more concerned about not finding a fault, so they would tolerate a moderate amount of false alarms. This leaves us with the conclusion that the Clang static analyzer is mainly incorporating pessimistic inaccuracy, which results in false alarms. However, the tool can be configured to also include optimistic inaccuracy if needed. This can be realized by adding filters so that some checks will become less strict. This behavior will result in some faults not being detected any longer.
 
-\emph{TOOD: Add investigation of CppCheck here}
+According to their website, the goal of CppCheck is to have zero false positives, resulting in a low pessimistic inaccuracy. They even recommend to use an additional tool that has a greater pessimistic inaccuracy if required for the project. Unfortunately in practice there are still some false positive mainly related to bugs in CppCheck as already mentioned before. The developers state that there are many faults that are not detected by CppCheck which leads to a high optimistic inaccuracy.
+
+This shows that trying to show as few false positives as possible often also implies that the user has to live with optimistic inaccuracy and that it is intended that not all faults are detected. Those tools can therefore not guarantee the absence of faults.
 
 \subsection{Interaction between Human-Based and Automated SA}
 
