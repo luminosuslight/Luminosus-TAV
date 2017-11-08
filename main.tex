@@ -29,7 +29,7 @@ The programming language used is C++ 11 with syntax additions by Qt. The user in
 
 The application is intended to be used by end users. It runs as a desktop application on Windows and MacOS and as an app on Android and iOS.
 
-The existing code base consists of ca. 40k LOC.
+The existing code base consists of ca. 40k LOC (C++ source and header files + QML files).
 
 Available artifacts are the source code, documentation, changelog, issue tracker, manual and in addition the Bachelor thesis \textit{Entwicklung einer modularen Benutzeroberfl\"ache als zus\"atzliche Bedieneinheit einer Lichtkonsole} including a requirement analysis and a discussion of the architectural decisions.
 
@@ -124,7 +124,7 @@ While it is comfortable for the team members that these functions are integrated
 We used Clang Static Analyzer and CppCheck for this project.
 Both tools are well suited for C++ code and are supported by the IDE (Qt Creator). The detected faults are intuitively shown next to the corresponding line in the code.
 
-On the in hand Clang helped to improve the code by finding a possible nullpointer derefence caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults.
+On the in hand Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults.
 
 Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives many of them were shown due to bugs in CppCheck.
 
