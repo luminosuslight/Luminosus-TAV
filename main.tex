@@ -42,7 +42,7 @@ Manual tests are performed and static code analysis is provided by the IDE.
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/2}{\#2} Connection to Eos stopped working:}
 
 After a while the network connection of the software to the lighting stopped working. The user was not able to continue using the application for the show even after restarting everything.
-While the fault is not yet known the issue is probably complexity related. Many different devices were involved and it is not clear if the problem was caused by this software a  different failing part in the system.
+While the fault is not yet known the issue is probably complexity related. Many different devices were involved and it is not clear whether the problem was caused by this software or a different failing part in the system.
 
 
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/3}{\#3} Faders not updated:}
@@ -140,7 +140,7 @@ This shows that trying to show as few false positives as possible often also imp
 
 By using ASA a peer review can be prepared in order to point out potentially broken code parts. It can then be discussed if a detected fault is considered a false positive or not.
 
-When using tools like SonarCube the faults get matched with their author. This enables each developer to learn from their mistakes in a more direct way. Additionally it also displays which kind of faults are often produced in a project. These faults can then be targeted by further education and more awareness.
+When using tools like SonarQube the faults get matched with their author. This enables each developer to learn from their mistakes in a more direct way. Additionally it also displays which kind of faults are often produced in a project. These faults can then be targeted by further education and more awareness.
 
 The results of a human-based peer review can be used to improve the configuration of the automated static analysis tools. This can reduce the number of false positives which are caused by the coding guidelines of the individual project and thus are intended.
 Depending on the use case the relevance of the faults is differently prioritized. In our specific case the implicit increase of precision of floating point numbers is not a problem at all. In contrast in more space critical applications this could lead to unpredictable behavior.
