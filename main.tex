@@ -1,12 +1,47 @@
 \documentclass{scrartcl}
-% deutsche Silbentrennung
-\usepackage[ngerman]{babel}
-% wegen deutschen Umlauten
+\usepackage[english]{babel}
+% deutsche Umlaute
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 
-\usepackage[colorlinks, linkcolor = black, citecolor = black, filecolor = black, urlcolor = blue]{hyperref} 
+% für das H placement Kommando bei figures:
+\usepackage{float}
+
+\usepackage{graphicx}
+\usepackage{varioref}
+\usepackage[
+bookmarks=true,	% Lesezeichen erzeugen
+bookmarksopen=false,	% Lesezeichen ausgeklappt
+bookmarksnumbered=true,	% Anzeige der Kapitelzahlen am Anfang der Namen der Lesezeichen
+pdfstartpage=1,	% Seite, welche automatisch geöffnet werden soll
+%baseurl=http://www.server.de/dateiname.pdf, 
+%  URL des PDF-Dokuments (oder Hintergrundinformationen)
+pdftitle={STAV Report},
+% Titel des PDF-Dokuments
+pdfauthor={Johannes Schneider, Tim Henning},	% Autor(Innen) des PDF-Dokuments
+pdfsubject={},	% Inhaltsbeschreibung des
+pdfkeywords={},
+% Stichwortangabe zum PDF-Dokument
+breaklinks=true,	% ermöglicht einen Umbruch von URLs
+colorlinks=true,	% Einfärbung von Links
+linkcolor=black,	% Linkfarbe: schwarz (z.B. im Inhaltsverzeichnis)
+anchorcolor=blue,	% Ankerfarbe: schwarz
+citecolor=black, % Literaturlinks: schwarz
+filecolor=black,	% Links zu lokalen Dateien: schwarz
+menucolor=black, % Acrobat Menü Einträge: schwarz
+pagecolor=blue, % Links zu anderen Seiten im Text: schwarz
+urlcolor=black,	%  URL-Farbe: schwarz
+%backref=true,
+pagebackref=false,
+pdfcenterwindow=true,
+pdfnewwindow=true,
+pdffitwindow=true,
+pdfstartview=FitH,
+pdfpagemode=UseOutlines
+] {hyperref}
+\usepackage{cleveref}
+
 
 \title{TAV - Report}
 \subtitle{Project: Luminosus}
@@ -22,6 +57,13 @@
 \subsection{Introduction}
 
 Extending the functionality of a lighting desk can be a difficult and time consuming task. To make it more easy to integrate and test new features the idea was to create a separate modular software platform that is connected via network to the lighting console. As a solution for this "Luminosus" was developed.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{img/luminosus_example}
+	\caption[Luminosus Example]{Luminosus Example: Controlling the brightness of channel 73 by the current audio level}
+	\label{fig:luminosus_example}
+\end{figure}
 
 The main project development was done by Tim Henning while writing his bachelor thesis. He is the only developer of the project till now. For this V\&V project Johannes Schneider joins the project as a developer and tester.
 
@@ -117,7 +159,14 @@ A good peer review is organized a few days before so that everyone can get into 
 
 \paragraph{Tools}
 
-A tool that is well suited for human-based peer reviews is the review function of GitHub. It allows for example to mark persons which have to review a pull request before it can be merged. Comments can be made for each line of code individually and the author can respond to them directly. It can also integrate various different tools and incorporate dynamical tests of continuous integration system like Travis CI, too.
+A tool that is well suited for human-based peer reviews is the review function of GitHub (see \vref{fig:github_review_comment}). It allows for example to mark persons which have to review a pull request before it can be merged. Comments can be made for each line of code individually and the author can respond to them directly. It can also integrate various different tools and incorporate dynamical tests of continuous integration system like Travis CI, too.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{img/github_review_comment}
+	\caption[GitHub Review Comment]{A comment in the GitHub review tool}
+	\label{fig:github_review_comment}
+\end{figure}
 
 While it is comfortable for the team members that these functions are integrated into the GitHub website and work in every browser, this means that no code exploration features known from various IDEs are available. As a beginning it would be nice for example to be able to jump to a function declaration right from the review page of GitHub. It would help the code understanding a lot.
 
@@ -128,13 +177,27 @@ While it is comfortable for the team members that these functions are integrated
 We used Clang Static Analyzer and CppCheck for this project.
 Both tools are well suited for C++ code and are supported by the IDE (Qt Creator). The detected faults are intuitively shown next to the corresponding line in the code.
 
-On the in hand Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults.
+On the in hand Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults (see \vref{fig:clang_fp_implicit_precision_increase}).
 
-Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives many of them were shown due to bugs in CppCheck.
+Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives many of them were shown due to bugs in CppCheck (see \vref{fig:cppcheck_fp_missing_ctor}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{img/cppcheck_fp_missing_ctor}
+	\caption[Bugs in CppCheck]{Bugs in CppCheck result in false positives}
+	\label{fig:cppcheck_fp_missing_ctor}
+\end{figure}
 
 \paragraph{Type of Inaccuracy}
 
 While investigating the design and philosophy of the Clang static analyzer the developers clearly stated that the tool was made to reported as less false positives as possible. However, they are more concerned about not finding a fault, so they would tolerate a moderate amount of false alarms. This leaves us with the conclusion that the Clang static analyzer is mainly incorporating pessimistic inaccuracy, which results in false alarms. However, the tool can be configured to also include optimistic inaccuracy if needed. This can be realized by adding filters so that some checks will become less strict. This behavior will result in some faults not being detected any longer.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{img/clang_fp_implicit_precision_increase}
+	\caption[Clang warns of increase in precision]{Clang warns of increase in precision of floating point number}
+	\label{fig:clang_fp_implicit_precision_increase}
+\end{figure}
 
 According to their website, the goal of CppCheck is to have zero false positives, resulting in a low pessimistic inaccuracy. They even recommend to use an additional tool that has a greater pessimistic inaccuracy if required for the project. Unfortunately in practice there are still some false positive mainly related to bugs in CppCheck as already mentioned before. The developers state that there are many faults that are not detected by CppCheck which leads to a high optimistic inaccuracy.
 
@@ -142,11 +205,20 @@ This shows that trying to show as few false positives as possible often also imp
 
 \subsection{Interaction between Human-Based and Automated SA}
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{img/github_pr_review}
+	\caption[GitHub PR review]{Combination of ASA and human-based reviews in GitHub}
+	\label{fig:github_pr_review}
+\end{figure}
+
 By using ASA a peer review can be prepared in order to point out potentially broken code parts. It can then be discussed if a detected fault is considered a false positive or not.
 
 When using tools like SonarQube the faults get matched with their author. This enables each developer to learn from their mistakes in a more direct way. Additionally it also displays which kind of faults are often produced in a project. These faults can then be targeted by further education and more awareness.
 
 The results of a human-based peer review can be used to improve the configuration of the automated static analysis tools. This can reduce the number of false positives which are caused by the coding guidelines of the individual project and thus are intended.
 Depending on the use case the relevance of the faults is differently prioritized. In our specific case the implicit increase of precision of floating point numbers is not a problem at all. In contrast in more space critical applications this could lead to unpredictable behavior.
+
+In addition to the combination of ASA and human-based reviews, testing can also be integrated in this process. GitHub is a good example for this, as it shows the result of different software verification and validation methods at one glance as seen in \vref{fig:github_pr_review}.
 
 \end{document}
