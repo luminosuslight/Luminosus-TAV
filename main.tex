@@ -156,16 +156,30 @@ Furthermore the development process can be improved by introducing a second deve
 
 \paragraph{Peer Review}
 
+During our peer review session we discovered different faults in our project as well as in the project of our partner group. Thus, the peer review helped us exchange thoughts about various faults not only within our group but also with members of our partners group. Therefore we used the peer review mainly to enhance communication and understanding of the code. Additionally, we fixed the faults we discovered thus improving the code quality. Main advantages of this kind of peer review is the fact, that every code snippet can be discussed directly with its author. This enables a very deep discussion about certain implementation decisions and also improved the overall code understanding by far. After just a short while we were even able to detect a misleading documentation for a certain implementation, although we never saw the code before. 
+
+%% old content
+\if(false) 
 The peer review helped understanding the code because it was possible to discuss the reviewed code directly with the author.
 We were able to improve the general code quality and comments by pointing out parts that were difficult to understand.
 
 The previously known bugs were found and we could even find a case where the description of a method did not match its content.
 
 A good peer review is organized a few days before so that everyone can get into the code. Therefore the discussion can start right away. It also helps to question even minor things so that the author can either explain his thoughts or comes to really think of it for the first time.
+\fi
+
+We organized our peer review sessions by picking suitable code snippets for each other. These snippets were supposed to be readable, even for someone who is not as deeply involved in the project or even the programming language at all. We then presented the selected code to the other group while also introducing the general project. Afterwards, we further increased our understanding by asking questions about unclear syntax or general questions about details within the code. Finally, we were able to discuss issues we found and tried to find suitable solutions.
+
+In general, peer reviews can help to improve the product by selecting difficult code and talk about it in a very objective way. Thus, we do not need to play the blaming game and can just focus on finding and avoiding faults for future implementations. Additionally, it is very important to do this kind of analysis on a regular basis, so that the reviewed code is still manageable in size and difficulty. 
 
 \paragraph{Tools}
 
+%% old content
+\if(false)
 A tool that is well suited for human-based peer reviews is the review function of GitHub (see \vref{fig:github_review_comment}). It allows for example to mark persons which have to review a pull request before it can be merged. Comments can be made for each line of code individually and the author can respond to them directly. It can also integrate various different tools and incorporate dynamical tests of continuous integration system like Travis CI, too.
+\fi
+
+A tool we are very comfortable using is GitHub. GitHub does not only allow you to host git repositories, so all your code is in just one place, but also offers a great variety of reviewing tools like commenting coding line by line (see \vref{fig:github_review_comment}). The concept of pull requests and its support is also a very strong feature in GitHub. It offers developers a very formal way of merging branches into each other. It supports a human based review process by naming one or more reviewers for the pull requests. These reviewers may then comment, ask questions or suggest improvements for the code at hand. Although this process is mostly covered by the features offered by GitHub, we would like to have a way of (autonomously) selecting code of interest as we did in our peer review. Right now, every reviewer has to read all the code submitted for merging, making it very time consuming.
 
 \begin{figure}[h]
 	\centering
@@ -176,16 +190,23 @@ A tool that is well suited for human-based peer reviews is the review function o
 
 While it is comfortable for the team members that these functions are integrated into the GitHub website and work in every browser, this means that no code exploration features known from various IDEs are available. As a beginning it would be nice for example to be able to jump to a function declaration right from the review page of GitHub. It would help the code understanding a lot.
 
+Besides GitHub, SonarQube is another excellent web based tool for reviewing code. In contrast to GitHub, SonarQube is not used as a repository host. What makes SonarQube still great is it build-in fault detection and static analysis. Thus, a reviewer can find any flaws very fast and also see, who authored the corresponding code. We will cover more of the automated static analysis feature of SonarQube in section \ref{sec:humand-based-vs-automated-sa}.
+
 \subsection{Automated Static Analysis}
 
 \paragraph{Evaluation of Tools}
 
+%% old content
+\if(false)
 We used Clang Static Analyzer and CppCheck for this project.
 Both tools are well suited for C++ code and are supported by the IDE (Qt Creator). The detected faults are intuitively shown next to the corresponding line in the code.
+\fi
+
+In order to test automated static analysis we used the Clang Static Analyzer and CppCheck for our project. We chose these tools not only because they offer great plugins for the IDE of our choice (Qt Creator) but also because they are made for analyzing C++ code. Any detected fault is displayed directly in the code editor, next to the line where it is caused. 
 
 On the in hand Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults (see \vref{fig:clang_fp_implicit_precision_increase}).
 
-Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives many of them were shown due to bugs in CppCheck (see \vref{fig:cppcheck_fp_missing_ctor}).
+Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives, many of them were shown due to bugs in CppCheck (see \vref{fig:cppcheck_fp_missing_ctor}).
 
 \begin{figure}[h]
 	\centering
@@ -210,6 +231,7 @@ According to their website, the goal of CppCheck is to have zero false positives
 This shows that trying to show as few false positives as possible often also implies that the user has to live with optimistic inaccuracy and that it is intended that not all faults are detected. Those tools can therefore not guarantee the absence of faults.
 
 \subsection{Interaction between Human-Based and Automated SA}
+\label{sec:humand-based-vs-automated-sa}
 
 \begin{figure}[h]
 	\centering
@@ -218,12 +240,12 @@ This shows that trying to show as few false positives as possible often also imp
 	\label{fig:github_pr_review}
 \end{figure}
 
-By using ASA a peer review can be prepared in order to point out potentially broken code parts. It can then be discussed if a detected fault is considered a false positive or not.
+By using ASA a peer review can be prepared in order to point out potentially broken code parts. It can then be discussed if a detected fault is considered a false positive or not and how to fix it. Additionally, some faults might be caused by a bad habit within the project team. These faults are very interesting to discover and can indicate certain lacks of the developing team, enabling more overall awareness once discussed thoroughly. They might even cause a change in the general consideration of good code in the team.  
 
-When using tools like SonarQube the faults get matched with their author. This enables each developer to learn from their mistakes in a more direct way. Additionally it also displays which kind of faults are often produced in a project. These faults can then be targeted by further education and more awareness.
+When using tools like SonarQube, the faults get matched with their author. This enables each developer to learn from their mistakes in a more direct way. Additionally it also displays which kind of faults are often produced in a project. These faults can then be targeted by further education and more awareness.
 
-The results of a human-based peer review can be used to improve the configuration of the automated static analysis tools. This can reduce the number of false positives which are caused by the coding guidelines of the individual project and thus are intended.
-Depending on the use case the relevance of the faults is differently prioritized. In our specific case the implicit increase of precision of floating point numbers is not a problem at all. In contrast in more space critical applications this could lead to unpredictable behavior.
+When thinking the other way around, the results of a human-based peer review can be used to improve the configuration of the automated static analysis tools. This can reduce the number of false positives which are caused by the coding guidelines of the individual project and thus are intended.
+Depending on the use case, the relevance of faults is differently prioritized. In our specific case the implicit increase of precision of floating point numbers is not a problem at all. In contrast, in more space critical applications this could lead to unpredictable behavior.
 
 In addition to the combination of ASA and human-based reviews, testing can also be integrated in this process. GitHub is a good example for this, as it shows the result of different software verification and validation methods at one glance as seen in \vref{fig:github_pr_review}.
 
