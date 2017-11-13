@@ -20,8 +20,8 @@ pdfstartpage=1,	% Seite, welche automatisch geöffnet werden soll
 pdftitle={STAV Report},
 % Titel des PDF-Dokuments
 pdfauthor={Johannes Schneider, Tim Henning},	% Autor(Innen) des PDF-Dokuments
-pdfsubject={},	% Inhaltsbeschreibung des
-pdfkeywords={},
+%pdfsubject={},	% Inhaltsbeschreibung des
+%pdfkeywords={},
 % Stichwortangabe zum PDF-Dokument
 breaklinks=true,	% ermöglicht einen Umbruch von URLs
 colorlinks=true,	% Einfärbung von Links
@@ -39,7 +39,7 @@ pdfnewwindow=true,
 pdffitwindow=true,
 pdfstartview=FitH,
 pdfpagemode=UseOutlines
-] {hyperref}
+]{hyperref}
 \usepackage{cleveref}
 
 
@@ -71,36 +71,42 @@ The programming language used is C++ 11 with syntax additions by Qt. The user in
 
 The application is intended to be used by end users. It runs as a desktop application on Windows and MacOS and as an app on Android and iOS.
 
-The existing code base consists of ca. 40k LOC (C++ source and header files + QML files).
+The existing code base consists of approximately 40k LOC (C++ source and header files + QML files).
 
 Available artifacts are the source code, documentation, changelog, issue tracker, manual and in addition the Bachelor thesis \textit{Entwicklung einer modularen Benutzeroberfl\"ache als zus\"atzliche Bedieneinheit einer Lichtkonsole} including a requirement analysis and a discussion of the architectural decisions.
 
 No specific development paradigm was used.
 
-Manual tests are performed and static code analysis is provided by the IDE.
+The current V\&V status is that only manual tests are performed (adding all available function blocks as a kind of 'smoke test' is available in the GUI) and static code analysis using Clang is provided by the IDE. Verification was not done yet.
 
 \subsection{Learning from failures}
 
+In the following section some random failures of the application shall be introduced and analyzed what can be learned from them.
+
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/2}{\#2} Connection to Eos stopped working:}
 
-After a while the network connection of the software to the lighting stopped working. The user was not able to continue using the application for the show even after restarting everything.
+After a while the network connection of the software to the lighting console stopped working. The user was not able to continue using the application for the show even after restarting everything.
+
 While the fault is not yet known the issue is probably complexity related. Many different devices were involved and it is not clear whether the problem was caused by this software or a different failing part in the system.
 
 
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/3}{\#3} Faders not updated:}
 
-The user described an issue where the fader position were not updated correctly after switching the page.
-This issues can be categorized as preventable as the fault was a single missing line of code that could have been found by unit tests that cover all branches of the code.
+The user described an issue where the fader positions were not updated correctly after switching the page of faders.
+
+The issue was caused by a single missing line of code that would reset the positions of all faders to 0 before requesting and setting the new positions.
+Thus the issue can be categorized as preventable as the fault could have been found by unit tests that cover all branches of the code.
 
 
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/4}{\#4} Fullscreen on iOS not working:}
 
-The issues states that the fullscreen button is not working correctly on the iOS platform. The failure is visible as too large UI elements that render the application unusable.
+The issues states that the fullscreen button is not working correctly on the iOS platform. The failure is visible as too large UI elements that render the application unusable after clicking on the fullscreen button.
+
 On the one hand the fault can be categorized as preventable since it could be detected by a simple unit test that compares the scale property before and after the operation.
-On the other hand it is also a type of intelligent fault since the real problem was the pure existence of a fullscreen button on a mobile operating system.
+On the other hand it is also a type of intelligent fault since the real problem was the pure existence of a fullscreen button on a mobile operating system. So even if the function would have been working as expected, the resulting behavior would be irritating as the only difference of the fullscreen mode on a mobile OS is the removal of the status bar that is in this case not very useful.
 
 \paragraph{Conclusion}
-In general the introduction of unit tests would be a valuable addition to the existing code base. Furthermore integration tests for typical user scenarios would help to prevent some kind of faults. Last but not least for maintaining so many different platforms the user feedback is an important part in the process of V\&V.
+In general the introduction of unit tests would be a valuable addition to the existing code base. Furthermore integration tests for typical user scenarios would help to prevent many kind of faults. Last but not least we learned that to maintain so many different platforms the user feedback is an important part in the process of V\&V.
 
 
 \subsection{Five Basic V\&V Questions}
