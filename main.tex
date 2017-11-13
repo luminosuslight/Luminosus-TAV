@@ -190,7 +190,7 @@ A tool we are very comfortable using is GitHub. GitHub does not only allow you t
 
 While it is comfortable for the team members that these functions are integrated into the GitHub website and work in every browser, this means that no code exploration features known from various IDEs are available. As a beginning it would be nice for example to be able to jump to a function declaration right from the review page of GitHub. It would help the code understanding a lot.
 
-Besides GitHub, SonarQube is another excellent web based tool for reviewing code. In contrast to GitHub, SonarQube is not used as a repository host. What makes SonarQube still great is it build-in fault detection and static analysis. Thus, a reviewer can find any flaws very fast and also see, who authored the corresponding code. We will cover more of the automated static analysis feature of SonarQube in section \ref{sec:humand-based-vs-automated-sa}.
+Besides GitHub, SonarQube is another excellent web based tool for reviewing code. In contrast to GitHub, SonarQube is not used as a repository host. What makes SonarQube still great is its build-in fault detection and static analysis. Thus, a reviewer can find any flaws very fast and also see, who authored the corresponding code. We will cover more of the automated static analysis feature of SonarQube in section \ref{sec:humand-based-vs-automated-sa}.
 
 \subsection{Automated Static Analysis}
 
@@ -204,7 +204,7 @@ Both tools are well suited for C++ code and are supported by the IDE (Qt Creator
 
 In order to test automated static analysis we used the Clang Static Analyzer and CppCheck for our project. We chose these tools not only because they offer great plugins for the IDE of our choice (Qt Creator) but also because they are made for analyzing C++ code. Any detected fault is displayed directly in the code editor, next to the line where it is caused. 
 
-On the in hand Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults (see \vref{fig:clang_fp_implicit_precision_increase}).
+On the one hand Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults (see \vref{fig:clang_fp_implicit_precision_increase}).
 
 Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives, many of them were shown due to bugs in CppCheck (see \vref{fig:cppcheck_fp_missing_ctor}).
 
@@ -213,6 +213,17 @@ Other than Clang, CppCheck found not initialized member variables. But even whil
 	\includegraphics[width=0.9\textwidth]{img/cppcheck_fp_missing_ctor}
 	\caption[Bugs in CppCheck]{Bugs in CppCheck result in false positives}
 	\label{fig:cppcheck_fp_missing_ctor}
+\end{figure}
+
+Due to the heavy use of C++ in security critical environments there are many non-free tools for bug finding and formal validation it, too. An example for this is Polyspace that even claims to be able to proof the absence of some types of faults, such as buffer overflows, division by zero and wrong array accesses.
+
+In the preparation of this report we tried to apply this tool to our project, but experienced some problems in using it (see \vref{fig:polyspace_analysis}). We were only able to validate one single source file, the only file with no dependencies other than the C++ standard library. To resolve the Qt includes it would be necessary to monitor the build process of the project by Polyspace, which was not possible due to a specific missing compiler on the system.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{img/polyspace_analysis}
+	\caption[Polyspace Analysis]{Polyspace showing errors while analyzing C++ code with Qt dependencies}
+	\label{fig:polyspace_analysis}
 \end{figure}
 
 \paragraph{Type of Inaccuracy}
@@ -229,6 +240,8 @@ While investigating the design and philosophy of the Clang static analyzer the d
 According to their website, the goal of CppCheck is to have zero false positives, resulting in a low pessimistic inaccuracy. They even recommend to use an additional tool that has a greater pessimistic inaccuracy if required for the project. Unfortunately in practice there are still some false positive mainly related to bugs in CppCheck as already mentioned before. The developers state that there are many faults that are not detected by CppCheck which leads to a high optimistic inaccuracy.
 
 This shows that trying to show as few false positives as possible often also implies that the user has to live with optimistic inaccuracy and that it is intended that not all faults are detected. Those tools can therefore not guarantee the absence of faults.
+
+Polyspace is the only tool that we evaluated that claims to have zero optimistic inaccuracy for some kind of faults. It realizes this by abstract interpretation of the code and automated formal validation methods.
 
 \subsection{Interaction between Human-Based and Automated SA}
 \label{sec:humand-based-vs-automated-sa}
