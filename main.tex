@@ -42,6 +42,13 @@ pdfpagemode=UseOutlines
 ]{hyperref}
 \usepackage{cleveref}
 
+\usepackage{listings}
+\lstdefinestyle{mystyle}{
+	breakatwhitespace=false,         
+	breaklines=true
+}
+\lstset{style=mystyle}
+
 
 \title{TAV - Report}
 \subtitle{Project: Luminosus}
@@ -196,15 +203,13 @@ Besides GitHub, SonarQube is another excellent web based tool for reviewing code
 
 \paragraph{Evaluation of Tools}
 
-%% old content
-\if(false)
-We used Clang Static Analyzer and CppCheck for this project.
-Both tools are well suited for C++ code and are supported by the IDE (Qt Creator). The detected faults are intuitively shown next to the corresponding line in the code.
-\fi
-
 In order to test automated static analysis we used the Clang Static Analyzer and CppCheck for our project. We chose these tools not only because they offer great plugins for the IDE of our choice (Qt Creator) but also because they are made for analyzing C++ code. Any detected fault is displayed directly in the code editor, next to the line where it is caused. 
 
 On the one hand Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers such making it harder to detect the real faults (see \vref{fig:clang_fp_implicit_precision_increase}).
+
+Next to the Clang Static Analyzer there is also the command line tool clang-tidy. The tools are quite similar, the static analyzer focuses more on checks that require some sort of control flow analysis while clang-tidy includes linter-style checks and checks that are related to a certain coding style\footnote{see \url{http://lists.llvm.org/pipermail/cfe-dev/2015-September/044966.html}}. Other than the static analyzer, clang-tidy is able to automatically fix most of the issues it found by modifying the source files directly, which is a very powerful feature to modernize legacy code bases.
+
+In our case, clang-tidy was able to point out some hard to find readability issues such as a misleading use of static\_cast where dynamic\_cast would be more appropriate because it was a downcast from a base to a derived class. It also suggested good uses for the auto keyword, missing \texttt{override} keywords and showed function definitions were the variable names did not match those of the declaration. It even highlighted a case where a function call contained an inline comment with the name of the parameter (like '\texttt{foo(/*parameterName=*/ true)}') that did not match the real parameter name. After a quick configuration we were able to suppress most of the warnings related to a different coding style and mostly true positives were shown.
 
 Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives, many of them were shown due to bugs in CppCheck (see \vref{fig:cppcheck_fp_missing_ctor}).
 
@@ -225,6 +230,9 @@ In the preparation of this report we tried to apply this tool to our project, bu
 	\caption[Polyspace Analysis]{Polyspace showing errors while analyzing C++ code with Qt dependencies}
 	\label{fig:polyspace_analysis}
 \end{figure}
+
+A tool that is specialized in style guide checks is Googles cpplint.py. Even while this projects style guide differs from Googles, the tool can give some interesting hints. As an example, it was able to find missing includes that the other tools did not report. This is a valuable addition and shows again that in the case of automated static analysis it is better to use a bunch of tools instead relying on a single one.
+
 
 \paragraph{Type of Inaccuracy}
 
