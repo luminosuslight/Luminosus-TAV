@@ -90,29 +90,30 @@ The current V\&V status is that only manual tests are performed (adding all avai
 \subsection{Learning from failures}
 
 % TODO: more description, examples
-In the following section some random failures of the application will be introduced and analyzed what can be learned from them.
+The following section is about learning from failures, which occurred over the course of developing the software.
 
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/2}{\#2} Connection to Eos stopped working:}
 
-After a while the network connection of the software to the lighting console stopped working. The user was not able to continue using the application for the show even after restarting everything.
+Since the software is basically an extension for an existing hardware device, the so-called lighting console, the most important component is the network connection to the said hardware. Should this component fail to execute its duties the entire software would become useless.
+That said, this exact scenario appeared for a user during his show. The connection to his lighting console was interrupted for yet unknown reasons. Furthermore, the user was not able to pick up the lost connection even after restarting his entire setup, including multiple hardware components.
 
-While the fault is not yet known the issue is probably complexity related. Many different devices were involved and it is not clear whether the problem was caused by this software or a different failing part in the system.
-
+Although the fault is still undetected, it can be categorized as complexity related. This is, because the interaction of different devices in various environments is very hard to predict and even harder to test upfront. Reasons for this failure range from outdated driver software for the said hardware components over defective hardware up until a fault within the networking component of Luminosus.
 
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/3}{\#3} Faders not updated:}
 
-The user described an issue where the fader positions were not updated correctly after switching the page of faders.
+The Eos lighting console offers a set of faders to control the light intensity on different devices. But since this set is very limited in the amount of supported devices, Eos additionally includes different pages of faders. Thus, the effective amount of hardware one can manage using the Eos lighting console increases immensely.
+% TODO: screenshot of fader visualization
+Luminosus also offers the feature of switching pages of faders. However, when switching between these pages, the corresponding faders were not updated properly. To be exact, they were not updated at all.
 
-The issue was caused by a single missing line of code that would reset the positions of all faders to 0 before requesting and setting the new positions.
-Thus the issue can be categorized as preventable as the fault could have been found by unit tests that cover all branches of the code.
+This failure was caused by a single missing line, which sets all faders to their initial position before requesting their current state. Thus, the fault was preventable, since a simple unit test could have covered this functionality.
 
 
 \paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/4}{\#4} Fullscreen on iOS not working:}
 
-The issues states that the fullscreen button is not working correctly on the iOS platform. The failure is visible as too large UI elements that render the application unusable after clicking on the fullscreen button.
+Luminosus is designed to be cross-platform compatible. Thus, when working on a desktop computer most users would like Luminosus to be presented in fullscreen mode. This wish was realized by implementing a button, which offers just this functionality.
+However, when running Luminosus on iOS, the fullscreen button caused the UI scaling to increase. This rendered the software practically unusable.
 
-On the one hand the fault can be categorized as preventable since it could be detected by a simple unit test that compares the scale property before and after the operation.
-On the other hand it is also a type of intelligent fault since the real problem was the pure existence of a fullscreen button on a mobile operating system. So even if the function would have been working as expected, the resulting behavior would be irritating as the only difference of the fullscreen mode on a mobile OS is the removal of the status bar which is in this case not very useful.
+The exact cause for this failure is not discovered yet. Still you could say this failure was preventable by having a unit test which compares the scale property before and after the operation. However, the fault could also be treated as intelligent related, since the button should have not been enabled for mobile devices in the first place. So even if the function would have been working as expected, the resulting behavior would be irritating as the only difference of the fullscreen mode on a mobile OS is the removal of the status bar, which does not help the user at all.
 
 \paragraph{Conclusion}
 In general the introduction of unit tests would be a valuable addition to the existing code base. Furthermore, integration tests for typical user scenarios would help to prevent many kinds of faults. Last but not least we learned that to maintain so many different platforms the user feedback is an important part in the process of V\&V.
@@ -167,6 +168,17 @@ Furthermore the development process can be improved by introducing a second deve
 
 % TODO: code examples
 During our peer review session we discovered different faults in our project as well as in the project of our partner group. Thus, the peer review helped us to exchange thoughts about various faults not only within our group but also with members of our partners group. Therefore we used the peer review mainly to enhance communication and understanding of the code. Additionally, we fixed the faults we discovered, thus improving the code quality. Main advantages of this kind of peer review is the fact, that every code snippet can be discussed directly with its author. This enables a very deep discussion about certain implementation decisions and also improves the overall code understanding by far. After just a short while, we were even able to detect a misleading documentation for a certain implementation, although we never saw the code before. 
+
+\begin{lstlisting}[frame=single, language=C++]
+void EosCue::createCueBlock() {
+EosCueBlock* block = qobject_cast<EosCueBlock*>(m_controller->blockManager()->addNewBlock("Eos Cue"));
+if (!block) {
+qWarning() << "Could not create Cue Block.";
+}
+block->setCueNumber(m_cueNumber);
+block->focus();
+}
+\end{lstlisting}
 
 We organized our peer review sessions by picking suitable code snippets for each other. These snippets were supposed to be readable, even for someone who is not as deeply involved in the project or even the programming language at all. We then presented the selected code to the other group, while also introducing the general project. Afterwards, we further increased our understanding by asking questions about unclear syntax or general questions about details within the code. Finally, we were able to discuss issues we found and tried to find suitable solutions.
 
