@@ -1,4 +1,4 @@
-\documentclass{scrartcl}
+\documentclass{scrreprt}
 \usepackage[english]{babel}
 % deutsche Umlaute
 \usepackage[utf8]{inputenc}
@@ -58,13 +58,16 @@ pdfpagemode=UseOutlines
 
 \maketitle
 
-\setcounter{section}{-1}
-\section{Application Selection}
+\setcounter{chapter}{-1}
+\chapter{Application Selection}
 
-\subsection{Introduction}
+\section{Introduction}
 
-% TODO: more about the software, more context
-Extending the functionality of a lighting desk can be a difficult and time consuming task. To make it easier to integrate and test new features the idea was to create a separate modular software platform that is connected via network to the lighting console. As a solution for this "Luminosus" was developed.
+Modern lighting desks used to control the stage technique in large theaters and concert halls are complex embedded system, often running a proprietary software on a Linux or Windows system in combination with two or more multitouch screens and custom hardware like faders and encoders. They are connected to all the systems in an event location like house- and stage lights, projectors, hoists and sometimes even the sound equipment. For communication between the components the industry recently started to use standardized network protocols.
+
+Extending the functionality of such a lighting desk can be a difficult and time consuming task. To make it easier to integrate and test new features, the idea was to create a separate modular software platform that is connected via network to the lighting console. As a solution for this "Luminosus" was developed.
+
+It is designed for lighting consoles from the market leader Electronic Theatre Controls (ETC) and uses the Open Sound Control (OSC)\footnote{see \textit{The Open Sound Control 1.0 Specification} by Matt Wright} protocol to control them. The user interface consists of modular function blocks that can be freely moved and connected. An example can be seen in \vref{fig:luminosus_example}.
 
 \begin{figure}[h]
 	\centering
@@ -75,19 +78,19 @@ Extending the functionality of a lighting desk can be a difficult and time consu
 
 The main project development was done by Tim Henning while writing his bachelor thesis. He is the only developer of the project until now. For this V\&V project Johannes Schneider joined the project as a developer and tester.
 
-The programming language used is C++ 11 with syntax additions by Qt. The user interface part uses the descriptive language QML that includes function definitions in JavaScript.
+The programming language used is C++ 11 with syntax additions by Qt. The user interface part uses the declarative language QML\footnote{ sometimes referred to as 'Qt Modeling Language', see \url{http://doc.qt.io/qt-5/qtqml-index.html}} that includes function definitions in JavaScript.
 
 The application is intended to be used by end users. It runs as a desktop application on Windows and MacOS and as an app on Android and iOS.
 
-The existing code base consists of approximately 40k LOC (C++ source and header files + QML files).
+The existing code base consists of approximately 40k LOC (C++ source and header files + QML files). The code can be found on GitHub\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition}}.
 
-Available artifacts are the source code, documentation, changelog, issue tracker, manual and in addition the Bachelor thesis \textit{Entwicklung einer modularen Benutzeroberfl\"ache als zus\"atzliche Bedieneinheit einer Lichtkonsole} including a requirement analysis and a discussion of the architectural decisions.
+Available artifacts are the source code, documentation, changelog\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/blob/master/doc/Changelog.txt}}, issue tracker\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/issues}}, manual\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/blob/master/doc/Manual_en.pdf}} and in addition the Bachelor thesis \textit{Entwicklung einer modularen Benutzeroberfl\"ache als zus\"atzliche Bedieneinheit einer Lichtkonsole} including a requirement analysis and a discussion of the architectural decisions.
 
 No specific development paradigm was used.
 
-The current V\&V status is that only manual tests are performed (adding all available function blocks as a kind of 'smoke test' is available in the GUI) and static code analysis using Clang is provided by the IDE. Verification was not done yet.
+The current V\&V status is that only manual tests are performed (adding all available function blocks as a kind of \textit{smoke test} is available in the GUI) and static code analysis using Clang is provided by the IDE. Verification was not done yet.
 
-\subsection{Learning from failures}
+\section{Learning from failures}
 
 % TODO: more description, examples
 The following section is about learning from failures, which occurred over the course of developing the software.
@@ -119,7 +122,7 @@ The exact cause for this failure is not discovered yet. Still you could say this
 In general the introduction of unit tests would be a valuable addition to the existing code base. Furthermore, integration tests for typical user scenarios would help to prevent many kinds of faults. Last but not least we learned that to maintain so many different platforms the user feedback is an important part in the process of V\&V.
 
 
-\subsection{Five Basic V\&V Questions}
+\section{Five Basic V\&V Questions}
 
 \paragraph{When do V\&V start?  When are they complete?}
 
@@ -160,9 +163,9 @@ Increasing emphasis on applying various V\&V techniques during further developme
 Furthermore the development process can be improved by introducing a second developer to the project. Thus, pair programming and code reviews can be established to help finding flaws. In addition maintaining the documentation will lead to a better process.
 
 
-\section{Analysis}
+\chapter{Analysis}
 
-\subsection{Human-based Static Analysis}
+\section{Human-based Static Analysis}
 
 \paragraph{Peer Review}
 
@@ -186,7 +189,7 @@ In general, peer reviews can help to improve the product by selecting difficult 
 
 \paragraph{Tools}
 
-A tool we are very comfortable using is GitHub. GitHub does not only allow you to host git repositories, so all your code is in just one place, but also offers a great variety of reviewing tools like commenting coding line by line (see \vref{fig:github_review_comment}). The concept of pull requests and its support is also a very strong feature in GitHub. It offers developers a very formal way of merging branches into each other. It supports a human based review process by naming one or more reviewers for the pull requests. These reviewers may then comment, ask questions or suggest improvements for the code at hand. Although this process is mostly covered by the features offered by GitHub, we would like to have a way of (autonomously) selecting code of interest as we did in our peer review. Right now, every reviewer has to read all the code submitted for merging, making it very time consuming.
+A tool we are very comfortable using is GitHub\footnote{\url{https://www.github.com}}. GitHub does not only allow you to host git repositories, so all your code is in just one place, but also offers a great variety of reviewing tools like commenting coding line by line (see \vref{fig:github_review_comment}). The concept of pull requests and its support is also a very strong feature in GitHub. It offers developers a very formal way of merging branches into each other. It supports a human based review process by naming one or more reviewers for the pull requests. These reviewers may then comment, ask questions or suggest improvements for the code at hand. Although this process is mostly covered by the features offered by GitHub, we would like to have a way of (autonomously) selecting code of interest as we did in our peer review. Right now, every reviewer has to read all the code submitted for merging, making it very time consuming.
 
 \begin{figure}[h]
 	\centering
@@ -197,22 +200,21 @@ A tool we are very comfortable using is GitHub. GitHub does not only allow you t
 
 While it is comfortable for the team members that these functions are integrated into the GitHub website and work in every browser, this means that no code exploration features known from various IDEs are available. As a beginning it would be nice, for example, to be able to jump to a function declaration right from the review page of GitHub. It would help understanding the code a lot.
 
-Besides GitHub, SonarQube is another excellent web based tool for reviewing code. In contrast to GitHub, SonarQube is not used as a repository host. What makes SonarQube still great is its build-in fault detection and static analysis. Thus, a reviewer can find any flaws very fast and also see, who authored the corresponding code. We will cover more of the automated static analysis feature of SonarQube in section \ref{sec:humand-based-vs-automated-sa}.
+Besides GitHub, SonarQube\footnote{\url{https://www.sonarqube.org}} is another excellent web based tool for reviewing code. In contrast to GitHub, SonarQube is not used as a repository host. What makes SonarQube still great is its build-in fault detection and static analysis. Thus, a reviewer can find any flaws very fast and also see, who authored the corresponding code. We will cover more of the automated static analysis feature of SonarQube in section \ref{sec:humand-based-vs-automated-sa}.
 
-\subsection{Automated Static Analysis}
+\section{Automated Static Analysis}
 
-\paragraph{Evaluation of Tools}
+%TODO: not up to date, add the other tools to intro
+In order to test automated static analysis, we used the Clang Static Analyzer\footnote{\url{https://clang-analyzer.llvm.org}} and CppCheck for our project. We chose these tools not only because they offer great plugins for the IDE of our choice (Qt Creator), but also because they are made for analyzing C++ code. Any detected fault is displayed directly in the code editor, next to the line where it is located at.
 
-In order to test automated static analysis we used the Clang Static Analyzer and CppCheck for our project. We chose these tools not only because they offer great plugins for the IDE of our choice (Qt Creator), but also because they are made for analyzing C++ code. Any detected fault is displayed directly in the code editor, next to the line where it is located at. 
+\paragraph{Clang Static Analyzer} On the one hand, Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers thereby making it harder to detect the real faults (see \vref{fig:clang_fp_implicit_precision_increase}).
 
-On the one hand, Clang helped to improve the code by finding a possible nullpointer dereference caused by a missing return statement. On the other hand it reported hundreds of false alarms in its default configuration, i.e. increase of precision of floating point numbers thereby making it harder to detect the real faults (see \vref{fig:clang_fp_implicit_precision_increase}).
-
-Next to the Clang Static Analyzer there is also the command line tool clang-tidy. The tools are quite similar, the static analyzer focuses more on checks that require some sort of control flow analysis while clang-tidy includes linter-style checks and checks that are related to a certain coding style\footnote{see \url{http://lists.llvm.org/pipermail/cfe-dev/2015-September/044966.html}}. Other than the static analyzer, clang-tidy is able to automatically fix most of the issues it found by modifying the source files directly, which is a very powerful feature to modernize legacy code bases.
+\paragraph{clang-tidy} Next to the Clang Static Analyzer there is also the command line tool clang-tidy\footnote{\url{http://clang.llvm.org/extra/clang-tidy/}}. The tools are quite similar, the static analyzer focuses more on checks that require some sort of control flow analysis while clang-tidy includes linter-style checks and checks that are related to a certain coding style\footnote{see discussion here: \url{http://lists.llvm.org/pipermail/cfe-dev/2015-September/044966.html}}. Other than the static analyzer, clang-tidy is able to automatically fix most of the issues it found by modifying the source files directly, which is a very powerful feature to modernize legacy code bases.
 
 In our case, clang-tidy was able to point out some hard to find readability issues such as a misleading use of static\_cast where dynamic\_cast would be more appropriate because it was a downcast from a base to a derived class. It also suggested good uses for the auto keyword, missing \texttt{override} keywords and showed function definitions were the variable names did not match those of the declaration. It even highlighted a case where a function call contained an inline comment with the name of the parameter (like '\texttt{foo(/*parameterName=*/ true)}') that did not match the real parameter name. After a quick configuration we were able to suppress most of the warnings related to a different coding style and mostly true positives were shown.
 
 % TODO: more detailed, seems confusing
-Other than Clang, CppCheck found not initialized member variables. But even while it was designed not to show false positives, many of them were shown due to bugs in CppCheck (see \vref{fig:cppcheck_fp_missing_ctor}).
+\paragraph{CppCheck} Other than Clang, CppCheck\footnote{\url{http://cppcheck.sourceforge.net}} found not initialized member variables. But even while it was designed not to show false positives, many of them were shown due to bugs in CppCheck (see \vref{fig:cppcheck_fp_missing_ctor}).
 
 \begin{figure}[h]
 	\centering
@@ -221,7 +223,7 @@ Other than Clang, CppCheck found not initialized member variables. But even whil
 	\label{fig:cppcheck_fp_missing_ctor}
 \end{figure}
 
-Due to the heavy usage of C++ in security critical environments, there are many non-free tools for bug finding and formal validation. An example for this is Polyspace, which even claims to be able to proof the absence of some types of faults, such as buffer overflows, division by zero and wrong array accesses.
+\paragraph{Polyspace} Due to the heavy usage of C++ in security critical environments, there are many non-free tools for bug finding and formal validation. An example for this is Polyspace\footnote{\url{https://www.mathworks.com/products/polyspace.html}}, which even claims to be able to proof the absence of some types of faults, such as buffer overflows, division by zero and wrong array accesses\footnote{see \url{https://www.mathworks.com/products/polyspace-code-prover.html}}.
 
 In the preparation of this report we tried to apply this tool to our project, but experienced some problems in using it (see \vref{fig:polyspace_analysis}). We were only able to validate one single source file, the only file with no dependencies other than the C++ standard library. To resolve the Qt includes, it would be necessary to monitor the build process of the project by Polyspace, which was not possible due to a specific missing compiler on the system.
 
@@ -232,10 +234,12 @@ In the preparation of this report we tried to apply this tool to our project, bu
 	\label{fig:polyspace_analysis}
 \end{figure}
 
-A tool that is specialized in style guide checks is Googles cpplint.py. Even while this projects style guide differs from Googles, the tool can give some interesting hints. As an example, it was able to find missing includes that the other tools did not report. This is a valuable addition and shows again that in the case of automated static analysis it is better to use a bunch of tools instead relying on a single one.
+\paragraph{cpplint} A tool that is specialized in style guide checks is Googles cpplint.py\footnote{\url{https://github.com/google/styleguide/tree/gh-pages/cpplint}}. Even while this projects style guide differs from Googles, the tool can give some interesting hints. As an example, it was able to find missing includes that the other tools did not report. This is a valuable addition and shows again that in the case of automated static analysis it is better to use a bunch of tools instead relying on a single one.
 
 
-\paragraph{Type of Inaccuracy}
+\subsection{Type of Inaccuracy}
+
+%TODO: split this up and combine it with previous section
 
 While investigating the design and philosophy of the Clang static analyzer, the developers clearly stated that the tool was made to reported as less false positives as possible. However, they are more concerned about not finding a fault, so they would tolerate a moderate amount of false alarms. This leaves us with the conclusion that the Clang static analyzer is mainly incorporating pessimistic inaccuracy, which results in false alarms. However, the tool can be configured to also include optimistic inaccuracy, if needed. This can be realized by adding filters so that some checks will become less strict. This behavior will result in some faults not being detected any longer.
 
@@ -252,7 +256,7 @@ This shows that trying to show as few false positives as possible often also imp
 
 Polyspace is the only tool that we evaluated that claims to have zero optimistic inaccuracy for some kind of faults. It realizes this by abstract interpretation of the code and automated formal validation methods.
 
-\subsection{Interaction between Human-Based and Automated SA}
+\section{Interaction between Human-Based and Automated SA}
 \label{sec:humand-based-vs-automated-sa}
 
 \begin{figure}[h]
