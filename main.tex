@@ -400,6 +400,6 @@ Testing the function in a small scope could be done by calling it with a previou
 
 At a medium scope the function \texttt{popPacketFromStreamData()} could be called after injecting the prepared data to the TCP socket object of the class. This method then checks which type of packet framing is used and eventually calls our function to test. It could then be checked the content of the packet is processed correctly in \texttt{processIncomingRawData()}.
 
-In the end, the function should also be tested at a large scope by sending real data over the network to the application and observe if the data is processed correctly and the behavior is as expected. This is important as some characteristics of the system like buffer sizes in the network hardware ar hard to predict and simulate and ensure that it works correctly in a real life scenario.
+In the end, the function should also be tested at a large scope by sending real data over the network to the application and observe if the data is processed correctly and the behavior is as expected. This is important as some characteristics of the system like buffer sizes in the network hardware are hard to predict or simulate and it ensures that the software works correctly in a real life scenario.
 
 \end{document}
