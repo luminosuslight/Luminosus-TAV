@@ -392,7 +392,7 @@ There is no existing test set.
 
 A good example for a unit that can be tested at different scopes is the following function:
 
-\texttt{QByteArray OSCNetworkManager::popPacketLengthFramedPacketFromStreamData(QByteArray\& tcpData) const}\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/blob/master/src/OSCNetworkManager.cpp\#L306}}
+\texttt{QByteArray popPacketLengthFramedPacketFromStreamData(QByteArray\& tcpData) const}\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/blob/master/src/OSCNetworkManager.cpp\#L306}}
 
 Its purpose is to extract one valid OSC packet from a buffer of received network data. The packet should be removed from the buffer and returned as a QByteArray.
 
