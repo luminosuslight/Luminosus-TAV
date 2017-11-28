@@ -263,4 +263,30 @@ Depending on the use case, the relevance of faults is differently prioritized. I
 
 In addition to the combination of ASA and human-based reviews, testing can also be integrated in this process. GitHub is a good example for this, as it shows the result of different software verification and validation methods at one glance, as seen in \vref{fig:github_pr_review}.
 
+\chapter{Testing}
+
+\section{Kick-off Tasks}
+
+\subsection{Example Test Set}
+
+As an example bug we chose issue \#17\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/issues/17}}. It describes a problem where sometimes the application crashes when receiving cue objects. The following lines of code caused this:
+
+\texttt{
+	void EosCueList::onIncomingEosMessage(const EosOSCMessage\& msg) \{\\
+		\[...\]\\
+	\} else if (msg.path().size() <= 5) \{\\
+// this message contains detailed information about a cue\\
+EosCueNumber cueNumber = EosCueNumber(msg.pathPart(2), msg.pathPart(3), msg.pathPart(4));\\
+\[...\]
+}
+
+The input data for a test case that leads to a failure would be a \texttt{msg} object with less than 5 path parts. The first error state would be that the program flow reaches line 94 with an \texttt{msg} object with less than 5 path parts. The fault is therefore in the if-condition in line 92 that evaluates to true in this case. By trying to access the not existing 5th part of the path with \texttt{msg.pathPart(4)} the program crashes with an index out of bounds exception.
+
+A test case that does not reach the fault is produced by using a \texttt{msg} object thats second path part is not \textit{cue}. This is caught by an if-statement that leads to an early exit before the fault.
+
+If the \texttt{msg} object is correct and has 5 or more path parts, the fault is reached but no error is produced.
+
+It is not possible to create a test case that reaches the fault and produces an error without a failure. Each time line 94 is reached with an \texttt{msg} object with less than 5 path parts (the error state), the failure is visible by the index out of bounds exception.
+
+
 \end{document}
