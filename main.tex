@@ -208,7 +208,8 @@ The code snippet we prepared is shown below.
 					firstnumber=171,
 					directivestyle={\color{black}}
 					emph={int,char,double,float,unsigned},
-					emphstyle={\color{blue}}]
+					emphstyle={\color{blue}},
+					title=src/eos\_specific/EosCue.cpp]
 void EosCue::createCueBlock() {
   EosCueBlock* block = qobject_cast<EosCueBlock*>(m_controller->blockManager()->addNewBlock("Eos Cue"));
   if (!block) {
@@ -335,11 +336,12 @@ As an example bug we chose issue \#17\footnote{\url{https://github.com/ETCLabs/L
 
 \bigskip
 \begin{lstlisting}[language=C++,
-numbers=left,
-firstnumber=78,
-directivestyle={\color{black}}
-emph={int,char,double,float,unsigned},
-emphstyle={\color{blue}}]
+							numbers=left,
+							firstnumber=78,
+							directivestyle={\color{black}}
+							emph={int,char,double,float,unsigned},
+							emphstyle={\color{blue}},
+							title=src/OSCNetworkManager.cpp]
 void onIncomingEosMessage(const EosOSCMessage& msg) {|\Suppressnumber|
     [...]|\Reactivatenumber{92}|
     } else if (msg.path().size() <= 5) {
@@ -361,7 +363,7 @@ It is not possible to create a test case that reaches the fault and produces an 
 
 There is no existing test set.
 
-\subsection{Different Scopes of Text Case Execution}
+\subsection{Different Scopes of Test Case Execution}
 
 A good example for a unit that can be tested at different scopes is the following function:
 
