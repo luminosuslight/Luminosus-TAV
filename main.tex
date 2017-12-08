@@ -48,6 +48,14 @@ pdfpagemode=UseOutlines
 	breaklines=true
 }
 \lstset{style=mystyle}
+\lstset{
+	language=C++,
+	basicstyle=\ttfamily,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	morecomment=[l][\color{magenta}]{\#}
+}
 % commands to skip lines:
 \lstset{numbers=left,numberblanklines=false,escapeinside=||}
 \let\origthelstnumber\thelstnumber
@@ -401,5 +409,63 @@ Testing the function in a small scope could be done by calling it with a previou
 At a medium scope the function \texttt{popPacketFromStreamData()} could be called after injecting the prepared data to the TCP socket object of the class. This method then checks which type of packet framing is used and eventually calls our function to test. It could then be checked the content of the packet is processed correctly in \texttt{processIncomingRawData()}.
 
 In the end, the function should also be tested at a large scope by sending real data over the network to the application and observe if the data is processed correctly and the behavior is as expected. This is important as some characteristics of the system like buffer sizes in the network hardware are hard to predict or simulate and it ensures that the software works correctly in a real life scenario.
+
+\section{Automated Unit Tests}
+
+% TODO: this is just a collection of findings, needs to be rephrased
+
+We are using the Google C++ Testing Framework\footnote{\url{https://github.com/google/googletest}} for automated tests.
+
+\subsection{Google Test Setup}
+
+Setting it up is rather simple: after installing the \textit{gtest} and \textit{gmock} libraries, it is possible to create a new executable that executes all available tests with only a few lines of code:
+
+\bigskip
+\begin{lstlisting}[title=tests/main.cpp]
+#include <gtest/gtest.h>
+
+int main(int argc, char[] argv) {
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+}
+\end{lstlisting}
+\bigskip
+
+A very basic test could look like this:
+
+\bigskip
+\begin{lstlisting}[title=tests/Demo.cpp]
+#include <gtest/gtest.h>
+
+TEST(DemoTest, Add) {
+	ASSERT_EQ(1+1, 2);
+}
+\end{lstlisting}
+\bigskip
+
+QtCreator has a basic Google Test integration. It can start all or only individual tests and displays the test results in the user interface.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\textwidth]{img/qtcreator_test_results}
+	\caption[QtCreator Test Results]{Test Results in QtCreator}
+	\label{fig:qtcreator_test_results}
+\end{figure}
+
+\subsection{Code Coverage}
+
+Unfortunately, it is not possible to calculate and display the code coverage of tests done with the Google Testing framework within QtCreator.
+
+% TODO: find out how to calculate (and visualize?) coverage
+
+\subsection{Bugs Found}
+
+Even while writing the first few unit tests, we were able to identify some issues where the code was not behaving as expected.
+
+In the first case an operation was never executed because of a wrong condition in an if-statement (rescaleTo() in Matrix.h).
+
+Furthermore in the same class it was possible to set a variable to a higher or lower value than specified through its setter method. The expected behavior in this case would be that the variable is then limited to its upper or lower bound.
+
+
 
 \end{document}
