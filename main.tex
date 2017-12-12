@@ -466,6 +466,36 @@ In the first case an operation was never executed because of a wrong condition i
 
 Furthermore in the same class it was possible to set a variable to a higher or lower value than specified through its setter method. The expected behavior in this case would be that the variable is then limited to its upper or lower bound.
 
+\subsection{Performance Regression Tests}
+
+The execution time of functions is an especially import aspect in the development of GUI applications. If a function consumes too much CPU time it can not only affect loading times, that can get annoying for the user if they are too long. It can also affect the general perceived responsiveness of the application: the responsiveness is higher if the delays between user interactions and visible changes are kept to a minimum. But in the end on mobile platforms, the most important effect of used CPU time is the battery consumption. When developing an app or in the case of C++ even a part of the operating system, the goal is most of the time to reach the lowest possible power consumption.
+
+A typical way to measure and be able to improve the execution time of single functions are \textit{microbenchmarks}. They measure the used CPU time per function call and summarize the results in a report. The developer can then start identifying performance bottlenecks and fix them.
+
+But in the context of automated testing it would be quite interesting to combine microbenchmarks with tests, especially regression tests.
+
+As most functions in a GUI application have to return in under 20ms for a lag-free user experience, a default timeout of the targeted frame time should be available. Tests that run longer than this duration should be considered failed or at least produce a warning message. The only exception to this are functions that are executed in a dedicated worker thread. It should be possible to mark those functions and disable or increase the timeout for them.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\textwidth]{img/performance_regression_mockup}
+	\caption[Mockup: Performance Regression]{\textit{Mockup:} Possible Visualization of Performance Regression Test Results}
+	\label{fig:performance_regression_mockup}
+\end{figure}
+
+Even better would be the the possibility to run performance regression tests. An overview as proposed in \vref{fig:performance_regression_mockup} could show which of the execution times of tested units increased or decreased after the last change.
+
+This would be very helpful to find regressions in code quality and even misuse of APIs. An example could be that in a bug fix the used sorting algorithm was changed or a linked list was used instead of a vector. A normal unit test would still pass in this case because the output of the function did not change, but only its CPU and memory footprint.
+
+Another example would be the addition of a parameter check to a function as a fix for a failing test. This would seem reasonable to the developer while trying to make all tests pass, but the developer might miss that this function is called million times per second and the parameter checks were removed intentionally because the functions was revealed as a performance bottleneck beforehand. An automated performance regression tests could easily show the effects of the change to the rest of the code and a more speed friendly fix could be found for the failing test.
+
+In reality, an unusually long execution time is often also caused by a large amount of generated debug or warning messages, which is a good indicator for a bug, too.
+
+An overview of aggregated performance changes over many commits and releases could be a good candidate as an indicator for general project health, too. The developers could be motivated to reach a performance improvement in each release by trying to make the report appearing in green, while of course the readability of the code should still have the highest priority in most cases.
+
+Unfortunately we could not find a feature like this in any of the regarded testing frameworks. Qt Test has the ability to include simple benchmarks in the tests but can not compare the results to those of prior commits. Google Test does not even have the ability built in to make benchmarks while testing. While Google offers a separate benchmarking framework for C++ to solve some of the mentioned issues, it is easily possible to create regressions overviews, either.
+
+To realize performance regression tests, they would need to be executed each time on the same machine and under the same conditions, or the results would need to be normalized in respect to a prior general performance measurement. But in regard of the possible benefits this seems to be a solvable problem.
 
 
 \end{document}
