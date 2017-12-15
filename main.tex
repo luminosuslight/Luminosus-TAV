@@ -384,13 +384,86 @@ void onIncomingEosMessage(const EosOSCMessage& msg) {|\Suppressnumber|
 \end{lstlisting}
 \bigskip
 
-The input data for a test case that leads to a failure would be a \texttt{msg} object with less than 5 path parts. The first error state would be that the program flow reaches line 94 with an \texttt{msg} object with less than 5 path parts. The fault is therefore in the if-condition in line 92 that evaluates to true because of the use of the '<=' operator instead of '=='. By trying to access the not existing 5th part of the path with \texttt{msg.pathPart(4)} in line 94 the program crashes with an index-out-of-bounds exception.
+\subsubsection{Test-Case \#1}
+\label{test-case-1}
 
-A test case that does not reach the fault is produced by using a \texttt{msg} object thats second path part is not 'cue'. This means the the message was not meant for this function, which is caught by an if-statement in the beginning that leads to an early exit prior to the fault.
+The first test case should be designed to not only reach the fault but also produce the failure.
 
-The fault is reached but no error is produced if the \texttt{msg} object is correct and has 5 or more path parts.
+\begin{itemize}
+	\item[] \underline{Test Value}
+	
+	An \texttt{EosOSCMessage} object, where \texttt{path().size()} equals 4.
+	
+	\item[] \underline{Expected Output}
+	
+	The application should crash, throwing a \texttt{SegmentationFault} exception.
+	
+	\item[] \underline{Fault}
+	
+	The fault is persisted in line 94, when \texttt{msg.pathPart(4)} is accessed. In our test case, this statement would access unallocated memory, leading to the \texttt{SegmentationFault}.
+	
+	\item[] \underline{First Error State}
+	
+	The first error state is reached, as soon as the \texttt{if-statement} in line 92 is evaluated to \texttt{true}. Consequentially, this leads to the execution of the following block, thus producing the fault.
+	
+	\item[] \underline{Failure}
+	
+	The failure shows exactly as the expected output. The program crashes, leaving an unresolved \texttt{SegmentationFault}.
+\end{itemize}
 
-It is not possible to create a test case that reaches the fault and produces an error without a failure. Each time line 94 is reached with an \texttt{msg} object with less than 5 path parts (the error state), the failure is visible by the index-out-of-bounds exception.
+\subsubsection{Test-Case \#2}
+\label{test-case-2}
+
+The second test case should not reach the fault at all.
+
+\begin{itemize}
+	\item[] \underline{Test Value}
+	
+	An \texttt{EosOSCMessage} object, where \texttt{path().size()} equals 6.
+	
+	\item[] \underline{Expected Output}
+	
+	The program continues processing the message, as specified by the protocol.
+	
+	\item[] \underline{Fault}
+	
+	The fault is still the same as in \vref{test-case-1}. However, since the \texttt{if-statement} in line 92 evaluates to \texttt{false} the fault is not reached.
+	
+	\item[] \underline{First Error State}
+	
+	-
+	
+	\item[] \underline{Failure}
+	
+	-
+\end{itemize}
+
+\subsubsection{Test-Case \#3}
+\label{test-case-3}
+
+The third test case is designed reach the fault while not producing an error.
+
+\begin{itemize}
+	\item[] \underline{Test Value}
+	
+	An \texttt{EosOSCMessage} object, where \texttt{path().size()} equals 5.
+	
+	\item[] \underline{Expected Output}
+	
+	The program reaches the fault, but does not produce an error. Thus, the message is processed according to the specification.
+	
+	\item[] \underline{Fault}
+	
+	The fault remains as described in \vref{test-case-1}. 
+	
+	\item[] \underline{First Error State}
+	
+	This test case does not produce a first error state. This is, because line 94 accesses only valid elements of \texttt{msg.path()}.
+	
+	\item[] \underline{Failure}
+	
+	-
+\end{itemize}
 
 \subsection{Type of Existing Test Set}
 
@@ -398,17 +471,89 @@ There is no existing test set.
 
 \subsection{Different Scopes of Test Case Execution}
 
-A good example for a unit that can be tested at different scopes is the following function:
+The following section will demonstrate, how small, medium and big tests can be applied to our project.
 
-\texttt{QByteArray popPacketLengthFramedPacketFromStreamData(QByteArray\& tcpData) const}\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/blob/master/src/OSCNetworkManager.cpp\#L306}}
+In order to do so, we choose to test following code snippet.
 
-Its purpose is to extract one valid OSC packet from a buffer of received network data. The packet should be removed from the buffer and returned as a QByteArray.
+\begin{lstlisting}[title=src/OSCNetworkManager.cpp]
+/*
+Extracts one valid OSC packet from the given buffer. 
+The packet will then be removed from the buffer and is returned as QByteArray.
+*/
+QByteArray OSCNetworkManager::popPacketLengthFramedPacketFromStreamData(QByteArray& tcpData) const {
+	[...]
+}
+\end{lstlisting}
+\bigskip
 
-Testing the function in a small scope could be done by calling it with a previously prepared QByteArray buffer as the input data and comparing its output to the expected result and checking if the data was removed from the buffer.
+As described in the documentation, this method will extract and remove a valid OSC packet from the given buffer (\texttt{tcpData}) and returns this packet as \texttt{QByteArray}.
 
-At a medium scope the function \texttt{popPacketFromStreamData()} could be called after injecting the prepared data to the TCP socket object of the class. This method then checks which type of packet framing is used and eventually calls our function to test. It could then be checked the content of the packet is processed correctly in \texttt{processIncomingRawData()}.
+This piece of code is especially interesting for our project, as it can be tested on multiple scope sizes as follows:
 
-In the end, the function should also be tested at a large scope by sending real data over the network to the application and observe if the data is processed correctly and the behavior is as expected. This is important as some characteristics of the system like buffer sizes in the network hardware are hard to predict or simulate and it ensures that the software works correctly in a real life scenario.
+\subsubsection{Small Testing}
+
+For small testing, the method is tested isolated (e.g. without any context). We can apply different testing strategies for this method:
+
+\begin{itemize}
+	\item[] \underline{Specification Testing}
+	
+	\begin{itemize}
+		\item[] \underline{Test Value}
+		
+		A buffer (\texttt{tcpData}), which contains exactly one valid OSC packet.
+		
+		\item[] \underline{Expected Output}
+		
+		A valid \texttt{QByteArray}, which contains all data of the given buffer. Additionally, the given buffer must be empty.
+	\end{itemize}
+
+	\item[] \underline{Defect Testing}
+	
+	\begin{itemize}
+		\item[] \underline{Test Value}
+		
+		A buffer (\texttt{tcpData}), which does not contain a valid OSC packet.
+		
+		\item[] \underline{Expected Output}
+		
+		An empty \texttt{QByteArray}. Additionally, the buffer is not modified.
+	\end{itemize}
+\end{itemize}
+
+These are only two examples, which do not complete any coverage criteria. Thus, the set of test cases should be expanded in the future. However, as for demonstrating how this method can be used to create small tests, these examples should be perfectly fine.
+
+\subsubsection{Medium Testing}
+
+For medium testing we added a little more context to the shown method. This will lead to a longer stack trace, as more methods are involved. One way of expanding the system under test is shown below:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/2_1_3_medium_test}
+	\caption[Medium Testing Context]{Testing context on a medium scale}
+	\label{fig:medium_test}
+\end{figure}
+
+When testing the displayed context, we need start testing the method \texttt{void OSCNetworkManager::processIncomingRawData(QByteArray msgData)}. Thus, we span a call graph as shown in \vref{fig:medium_test}. The edges can be reached by manipulating the \texttt{msg} input parameter.
+
+One method to develop test cases for our scenario is to define subsets for our input domain. To be concrete, we divided the input domain as follows:
+
+\begin{itemize}
+	\item \texttt{msg} is empty
+	\item \texttt{msg} is not empty
+	
+	\begin{itemize}
+		\item \texttt{msg} starts with \texttt{"/"}
+		\item \texttt{msg} start with \texttt{"\#bundle"}
+	\end{itemize}
+\end{itemize}
+
+When using this input domain subsets, we can define a test set, which covers every edge of the call graph. For evaluation of the test results we need to use a human oracle, as the concrete expected behavior depends heavily on the input data and can not be verified by specification.
+
+\subsubsection{Big Testing}
+
+As for big testing, we decided to replace the synthetic \texttt{msg} object from \vref{fig:medium_test} with the real network adapter. This allows us, to also include other components, which are depending on the networking module.
+
+In order to execute tests on this scope, a real tcp connection (e.g. a tcp client, which uses the running application as its server) is needed. Using this setup, we would like to perform defect testing mainly. This is, because including hardware (such as the networking card) on a real network configuration might lead to unexpected behavior, which is otherwise hard to test. Concrete, we would like to test various things on our entire networking subsystem, like packet fragmentation, packet loss and the behavior when connections are closed unexpectedly.
 
 \section{Automated Unit Tests}
 
