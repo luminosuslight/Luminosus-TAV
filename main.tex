@@ -559,14 +559,18 @@ In order to execute tests on this scope, a real tcp connection (e.g. a tcp clien
 
 % TODO: this is just a collection of findings, needs to be rephrased
 
-We are using the Google C++ Testing Framework\footnote{\url{https://github.com/google/googletest}} for automated tests.
+The following chapter is about how test cases, which were developed as examples earlier, can be executed and validated automatically. Therefore, we decided to try (a) Googles C++ Testing Framework\footnote{\url{https://github.com/google/googletest}} as well as the (b) Qt Testing Framework\footnote{\url{http://doc.qt.io/qt-5/qtest-overview.html}}. These two frameworks offer similar set of features and will be evaluated in the following sections.
 
-\subsection{Google Test Setup}
+\subsection{Google Test}
+
+This section is about the basics of the Google Testing Framework for C++. We will explain what is needed to setup the framework and how to write tests. Additionally, we will display how Googles Testing Framework is integrated in the QtCreator.
+
+\subsubsection{Setup}
 
 Setting it up is rather simple: after installing the \textit{gtest} and \textit{gmock} libraries, it is possible to create a new executable that executes all available tests with only a few lines of code:
 
 \bigskip
-\begin{lstlisting}[title=tests/main.cpp]
+\begin{lstlisting}[title=tests-google/main.cpp]
 #include <gtest/gtest.h>
 
 int main(int argc, char[] argv) {
@@ -576,10 +580,12 @@ int main(int argc, char[] argv) {
 \end{lstlisting}
 \bigskip
 
+\subsubsection{Example Test}
+
 A very basic test could look like this:
 
 \bigskip
-\begin{lstlisting}[title=tests/Demo.cpp]
+\begin{lstlisting}[title=tests-google/Demo.cpp]
 #include <gtest/gtest.h>
 
 TEST(DemoTest, Add) {
@@ -587,6 +593,8 @@ TEST(DemoTest, Add) {
 }
 \end{lstlisting}
 \bigskip
+
+\subsubsection{IDE Integration}
 
 QtCreator has a basic Google Test integration. It can start all or only individual tests and displays the test results in the user interface.
 
@@ -596,6 +604,79 @@ QtCreator has a basic Google Test integration. It can start all or only individu
 	\caption[QtCreator Test Results]{Test Results in QtCreator}
 	\label{fig:qtcreator_test_results}
 \end{figure}
+
+\subsection{Qt Test}
+
+After we looked at the Google Testing Framework, we also took the Qt Framework and did the very same procedure.
+
+\subsubsection{Setup}
+
+Setting up the Qt Testing Framework does not require any additional libraries to be installed (assuming one uses the QtCreator IDE, as we did). However, setting up the test driver requires more code as for the Google driver. This is not necessarily a bad thing as it opens up a more flexible test configuration, but may also be more error prone.
+
+\bigskip
+% TODO: replace *OR* in code with C++ logical OR ("|")
+\begin{lstlisting}[title=tests-qt/main.cpp]
+#include <QtTest>
+
+#include "MatrixTest.h"
+#include "OscNetworkManagerTest.h"
+#include "BlockCreationTest.h"
+
+int main(int argc, char** argv) {
+	QApplication app(argc, argv);	
+	QList<QObject*> testCases;
+	testCases << new MatrixTest();
+	testCases << new OscNetworkManagerTest();
+	testCases << new BlockCreationTest();
+	
+	int returnValue = 0;
+	for (QObject* testCase: testCases) {
+		returnValue = returnValue *OR* QTest::qExec(testCase, argc, argv);
+	}
+	return returnValue;
+}
+\end{lstlisting}
+\bigskip
+
+\subsubsection{Example Test}
+
+Implementing test cases requires to also implement a special interface, designed by the Qt Testing Framework. Although all of the methods shown below may be empty, they still need to exists. This makes it a little more time consuming to write test cases using the Qt approach.
+
+\bigskip
+\begin{lstlisting}[title=tests-qt/ClassUnderTest.h]
+#pragma once
+
+#include <QtTests>
+
+class ClassUnderTest : public QObject {
+	Q_OBJECT
+private slots:
+	// Will be called before the first test function is executed.
+	void initTestCase();
+	
+	// Will be called after the last test function was executed.
+	void cleanupTestCase();
+	
+	// Will be called before each test function is executed.
+	void init();
+	
+	// Will be called after every test function.
+	void cleanup();
+}
+\end{lstlisting}
+\bigskip
+
+Once the interface is implemented, the test case itself is rather simple again:
+
+\begin{lstlisting}[title=tests-qt/Demo.cpp]
+void testDemo() {
+	QCOMPARE(1+1, 2);
+}
+\end{lstlisting}
+
+\subsubsection{IDE Integration}
+
+% TODO: add picture of test results
 
 \subsection{Code Coverage}
 
@@ -607,7 +688,7 @@ Unfortunately, it is not possible to calculate and display the code coverage of 
 
 Even while writing the first few unit tests, we were able to identify some issues where the code was not behaving as expected.
 
-In the first case an operation was never executed because of a wrong condition in an if-statement (rescaleTo() in Matrix.h).
+In the first case an operation was never executed because of a wrong condition in an if-statement (\texttt{rescaleTo()} in Matrix.h).
 
 Furthermore in the same class it was possible to set a variable to a higher or lower value than specified through its setter method. The expected behavior in this case would be that the variable is then limited to its upper or lower bound.
 
