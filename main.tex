@@ -555,9 +555,20 @@ As for big testing, we decided to replace the synthetic \texttt{msg} object from
 
 In order to execute tests on this scope, a real tcp connection (e.g. a tcp client, which uses the running application as its server) is needed. Using this setup, we would like to perform defect testing mainly. This is, because including hardware (such as the networking card) on a real network configuration might lead to unexpected behavior, which is otherwise hard to test. Concrete, we would like to test various things on our entire networking subsystem, like packet fragmentation, packet loss and the behavior when connections are closed unexpectedly.
 
-\section{Automated Unit Tests}
+\section{Test Case Development}
 
-% TODO: this is just a collection of findings, needs to be rephrased
+\subsection{Control Flow Graph Coverage}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\textwidth]{img/cfg_rescale_to}
+	\caption[Control Flow Graph rescaleTo()]{Control Flow Graph of the rescaleTo() Method}
+	\label{fig:cfg_rescale_to}
+\end{figure}
+
+We implemented tests for node, edge, edge pair and prime path coverage for the rescaleTo() function. The control flow graph can be seen in \vref{fig:cfg_rescale_to}. [TODO: more explanation]
+
+\section{Automated Unit Tests}
 
 The following chapter is about how test cases, which were developed as examples earlier, can be executed and validated automatically. Therefore, we decided to try (a) Googles C++ Testing Framework\footnote{\url{https://github.com/google/googletest}} as well as the (b) Qt Testing Framework\footnote{\url{http://doc.qt.io/qt-5/qtest-overview.html}}. These two frameworks offer similar set of features and will be evaluated in the following sections.
 
@@ -607,11 +618,15 @@ QtCreator has a basic Google Test integration. It can start all or only individu
 
 \subsection{Qt Test}
 
-After we looked at the Google Testing Framework, we also took the Qt Framework and did the very same procedure.
+While the Google Test Framework is well suitable for general C++ code and has its major advantage in being universal for all platforms and types of code, it has some disadvantages when testing more Qt specific functionalities. With Google Test, much boilerplate code is required to test the Qt Signal\&Slot mechanism for instance.
 
-\subsubsection{Setup}
+To overcome these issues we also looked at the Qt Test Framework and evaluated whether it solves them.
 
-Setting up the Qt Testing Framework does not require any additional libraries to be installed (assuming one uses the QtCreator IDE, as we did). However, setting up the test driver requires more code as for the Google driver. This is not necessarily a bad thing as it opens up a more flexible test configuration, but may also be more error prone.
+\subsubsection{Setup and Test Driver}
+
+Setting up the Qt Testing Framework does not require any additional libraries to be installed (assuming one uses the QtCreator IDE, as we did). However, setting up the test driver requires more code as for the Google driver because the tests can not be found automatically. This is not necessarily a bad thing as it opens up a more flexible test configuration, but may also be more error prone.
+
+The test driver we use for the tests looks like this:
 
 \bigskip
 % TODO: replace *OR* in code with C++ logical OR ("|")
@@ -641,7 +656,7 @@ int main(int argc, char** argv) {
 
 \subsubsection{Example Test}
 
-Implementing test cases requires to also implement a special interface, designed by the Qt Testing Framework. Although all of the methods shown below may be empty, they still need to exists. This makes it a little more time consuming to write test cases using the Qt approach.
+Implementing test cases follows the \textit{convention over configuration} approach. For each group of test cases a custom class that inherits from QObject has to be created. To prepare a set of test cases, the method \texttt{initTestCase()} can be declared and is executed automatically by Qt Test before any test case is executed. The method \texttt{cleanupTestCase()} handles the opposite case of cleaning up after the execution of all tests. \texttt{init()} and \texttt{cleanup()} work in the same fashion, but are executed again before each single test case. An example class that declares all these methods can be seen here:
 
 \bigskip
 \begin{lstlisting}[title=tests-qt/ClassUnderTest.h]
@@ -667,13 +682,36 @@ private slots:
 \end{lstlisting}
 \bigskip
 
-Once the interface is implemented, the test case itself is rather simple again:
+Each additional method of the test class which's name starts with 'test' is considered as a test case and is found by Qt with the introspection feature of QObjects.
+
+A very simple test case like in the Google Test example would look like the following:
 
 \begin{lstlisting}[title=tests-qt/Demo.cpp]
 void testDemo() {
 	QCOMPARE(1+1, 2);
 }
 \end{lstlisting}
+
+\subsubsection{Differences to Google Test}
+
+\paragraph{Simulating Mouse and Keyboard}
+
+The controllability of GUI tests is much increased by Qt Tests as it offers the functions \texttt{keyClick()} and \texttt{mouseClick()}. They simulate keyboard and mouse events by sending internal Qt events instead of hijacking the input device on operating system level, which means that there are much less side effects when using them. 
+
+Sequences of inputs can be specified and the delay between them adjusted by command line parameters. This makes it quite easy to test custom GUI objects like in our application in an isolated and reproducable way.
+
+\paragraph{Testing Signals and Slots}
+
+To increase the observability, Qt Test provides the class QSignalSpy. It makes it possible to include the amount of signal emission in the expected output of a test and even compare the parameter values of the emitted signals.
+
+In addition, QSignalSpy can start an event loop inside of a test to be able to detect signals that are send between threads using queues or that are emitted with a short delay. The event loop is quited after a specified timeout and the test is considered failed if the expected behavior was not observed in the meantime.
+
+Beside that, it is possible to log all emitted signals with the '-vs' command line parameter, which makes debugging much easier. It also allows to detect unnecessarily repeated signals, which also caused problems in our project before.
+
+\paragraph{Microbenchmarks}
+
+It is possible to include microbenchmarks directly inside the tests. A reasonable number of iterations is detected automatically while running the tests, the type of time measurement can be chosen and the results are reported right after the corresponding test results. Why this is important for GUI application development is further discussed in \vref{performance_regression_tests}.
+
 
 \subsubsection{IDE Integration}
 
@@ -701,6 +739,7 @@ In the first case an operation was never executed because of a wrong condition i
 Furthermore in the same class it was possible to set a variable to a higher or lower value than specified through its setter method. The expected behavior in this case would be that the variable is then limited to its upper or lower bound.
 
 \subsection{Performance Regression Tests}
+\label{performance_regression_tests}
 
 The execution time of functions is an especially import aspect in the development of GUI applications. If a function consumes too much CPU time it can not only affect loading times, that can get annoying for the user if they are too long. It can also affect the general perceived responsiveness of the application: the responsiveness is higher if the delays between user interactions and visible changes are kept to a minimum. But in the end on mobile platforms, the most important effect of used CPU time is the battery consumption. When developing an app or in the case of C++ even a part of the operating system, the goal is most of the time to reach the lowest possible power consumption.
 
@@ -730,17 +769,6 @@ An overview of aggregated performance changes over many commits and releases cou
 Unfortunately we could not find a feature like this in any of the regarded testing frameworks. Qt Test has the ability to include simple benchmarks in the tests but can not compare the results to those of prior commits. Google Test does not even have the ability built in to make benchmarks while testing. While Google offers a separate benchmarking framework for C++ to solve some of the mentioned issues, it is not easily possible to create regressions overviews, either.
 
 To realize performance regression tests, they would need to be executed each time on the same machine and under the same conditions, or the results would need to be normalized in respect to a prior general performance measurement. But in regard of the possible benefits this seems to be a solvable problem.
-
-\subsection{Control Flow Graph Coverage}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=1.0\textwidth]{img/cfg_rescale_to}
-	\caption[Control Flow Graph rescaleTo()]{Control Flow Graph of the rescaleTo() Method}
-	\label{fig:cfg_rescale_to}
-\end{figure}
-
-We implemented tests for node, edge, edge pair and prime path coverage for the rescaleTo() function. The control flow graph can be seen in \vref{fig:cfg_rescale_to}. [TODO: more explanation]
 
 
 \end{document}
