@@ -123,14 +123,14 @@ The current V\&V status is that only manual tests are performed (adding all avai
 
 The following section is about learning from failures, which occurred over the course of developing the software.
 
-\subsection{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/2}{\#2} Connection to Eos stopped working:}
+\paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/2}{\#2} Connection to Eos stopped working:}
 
 Since the software is basically an extension for an existing hardware device, the so-called lighting console, the most important component is the network connection to the said hardware. Should this component fail to execute its duties the entire software would become useless.
 That said, this exact scenario appeared for a user during his show. The connection to his lighting console was interrupted for yet unknown reasons. Furthermore, the user was not able to pick up the lost connection even after restarting his entire setup, including multiple hardware components.
 
 Although the fault is still undetected, it can be categorized as complexity related. This is, because the interaction of different devices in various environments is very hard to predict and even harder to test upfront. Reasons for this failure range from outdated driver software for the said hardware components over defective hardware up until a fault within the networking component of Luminosus.
 
-\subsection{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/3}{\#3} Faders not updated:}
+\paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/3}{\#3} Faders not updated:}
 
 The Eos lighting console offers a set of faders to control the light intensity on different devices. But since this set is very limited in the amount of supported devices, Eos additionally includes virtual pages of faders. Thus, the effective amount of hardware one can manage using the Eos lighting console increases immensely.
 
@@ -148,14 +148,14 @@ However, when switching between these pages, the corresponding faders were not u
 This failure was caused by a single missing line, which sets all faders to their initial position before requesting their current state. Thus, the fault was preventable, since a simple unit test could have covered this functionality.
 
 
-\subsection{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/4}{\#4} Fullscreen on iOS not working:}
+\paragraph{Issue \href{https://github.com/ETCLabs/LuminosusEosEdition/issues/4}{\#4} Fullscreen on iOS not working:}
 
 Luminosus is designed to be cross-platform compatible. Thus, when working on a desktop computer most users would like Luminosus to be presented in fullscreen mode. This wish was realized by implementing a button, which offers just this functionality.
 However, when running Luminosus on iOS, the fullscreen button caused the UI scaling to increase. This rendered the software practically unusable.
 
 The exact cause for this failure is not discovered yet. Still you could say this failure was preventable by having a unit test which compares the scale property before and after the operation. However, the fault could also be treated as intelligent related, since the button should have not been enabled for mobile devices in the first place. So even if the function would have been working as expected, the resulting behavior would be irritating as the only difference of the fullscreen mode on a mobile OS is the removal of the status bar, which does not help the user at all.
 
-\subsection{Conclusion}
+\paragraph{Conclusion}
 In general the introduction of unit tests would be a valuable addition to the existing code base. Furthermore, integration tests for typical user scenarios would help to prevent many kinds of faults. Last but not least we learned that to maintain so many different platforms the user feedback is an important part in the process of V\&V.
 
 
@@ -553,9 +553,17 @@ When using this input domain subsets, we can define a test set, which covers eve
 
 As for big testing, we decided to replace the synthetic \texttt{msg} object from \vref{fig:medium_test} with the real network adapter. This allows us, to also include other components, which are depending on the networking module.
 
-In order to execute tests on this scope, a real tcp connection (e.g. a tcp client, which uses the running application as its server) is needed. Using this setup, we would like to perform defect testing mainly. This is, because including hardware (such as the networking card) on a real network configuration might lead to unexpected behavior, which is otherwise hard to test. Concrete, we would like to test various things on our entire networking subsystem, like packet fragmentation, packet loss and the behavior when connections are closed unexpectedly.
+In order to execute tests on this scope, a real TCP connection (e.g. a TCP client, which uses the running application as its server) is needed. Using this setup, we would like to perform defect testing mainly. This is, because including hardware (such as the networking card) on a real network configuration might lead to unexpected behavior, which is otherwise hard to test. Concrete, we would like to test various things on our entire networking subsystem, like packet fragmentation, packet loss and the behavior when connections are closed unexpectedly.
 
 \section{Test Case Development}
+
+There are multiple different approaches to generated test values for a specific test case to reach a certain kind of coverage. We will discuss some of them the following sections, using the \texttt{ColorMatrix::rescaleTo()} method as an example.
+
+\subsection{Input Domain Modeling}
+
+TODO
+
+%TODO
 
 \subsection{Control Flow Graph Coverage}
 
@@ -566,7 +574,45 @@ In order to execute tests on this scope, a real tcp connection (e.g. a tcp clien
 	\label{fig:cfg_rescale_to}
 \end{figure}
 
-We implemented tests for node, edge, edge pair and prime path coverage for the rescaleTo() function. The control flow graph can be seen in \vref{fig:cfg_rescale_to}. [TODO: more explanation]
+\paragraph{Node Coverage} The simplest way to cover a control flow graph as seen in \vref{fig:cfg_rescale_to} is to create test cases that visit all nodes at least once. For the rescaleTo() method three paths have to be covered for this: (0, 1), (0, 2, 3), (0, 2, 4, 5, 6, 7, 8, 7, 9, 10).
+
+The four input parameters that rescaleTo() depends on, are the current width and height of the matrix and the parameter of the function sx and sy. To execute the three mentioned paths the following input values can be used: [1, 1, 1, 1], [1, 1, 0, 0], [2, 2, 1, 1].
+
+\paragraph{Edge Coverage} The same test values can be used to reach edge coverage, i.e. visit all edges of the graph at least once.
+
+\paragraph{Edge Pair Coverage} To cover all pairs of edges, two additional paths would have to be covered. The path (0, 2, 4, 5, 10) is infeasible because the second if-statement makes sure that the rest of the method is only executed when the size changes, which means the for-loops are executed every time node 4 is reached.
+The path (0, 2, 4, 5, 6, 7, 8, 7, 9, 10) is expanded to (0, 2, 4, 5, 6, 7, 8, 7, 8, 7, 9, 5, 6, 7, 8, 7, 8, 7, 9, 5, 10) to also cover the edge pair (9, 5, 6). This path is executed with the input values [2, 2, 1, 1].
+
+\paragraph{Prime Path Coverage} The following prime paths were calculated with the online tool by Ammann and Offutt\footnote{\url{https://cs.gmu.edu:8443/offutt/coverage/GraphCoverage}}:
+
+\begin{itemize}
+	\item[a)] 0, 1
+	\item[b)] 0, 2, 3
+	\item[c)] 0, 2, 4, 5, 10
+	\item[d)] 0, 2, 4, 5, 6, 7, 8, 7, 9, 5, 10
+	\item[e)] 0, 2, 4, 5, 6, 7, 8, 7, 8, 7, 9, 5, 10
+	\item[f)] 0, 2, 4, 5, 6, 7, 9, 5, 6, 7, 8, 7, 9, 5, 6, 7, 9, 5, 10
+\end{itemize}
+
+Path c is again infeasible. Path f is infeasible, too, but to cover at least the contained prime path (7,9,5,6,7) the path (0, 2, 4, 5, 6, 7, 8, 7, 8, 7, 9, 5, 6, 7, 8, 7, 8, 7, 9, 5, 10) was chosen as an alternative.
+
+The following table shows the input values to execute those paths. The values were determined manually because of the lack of tool support for this.
+
+\begin{table}[h]
+	\centering
+	\caption{Test Cases for Prime Path Coverage}
+	\begin{tabular}{l|r|r|r|r}
+		Path           & width & height & sx & sy  \\ \hline
+		0, 1           &     1 &      1 &  1 &  1  \\
+		0, 2, 3        &     1 &      1 &  0 &  0  \\
+		0, 2, 4, 5, 6, 7, 8, 7, 9, 5, 10        &     2 &      2 &  1 &  1  \\
+		0, 2, 4, 5, 6, 7, 8, 7, 8, 7, 9, 5, 10  &     2 &      1 &  1 &  2  \\
+		0, 2, 4, 5, 6, 7, 8, 7, 8, 7, 9, 5, 6, 7, 8, 7, 8, 7, 9, 5, 10 &     1 &      1 &  2 &  2  \\
+	\end{tabular}
+\end{table}
+
+\paragraph{Complete Coverage} The complete coverage of all existing paths is not possible as there is an almost infinite number of paths due to the for-loops.
+
 
 \section{Automated Unit Tests}
 
@@ -724,11 +770,13 @@ The Qt Test Framework is integrated in the graphical user interface of Qt Creato
 	\label{fig:qtcreator_test_results_qt}
 \end{figure}
 
-\subsection{Code Coverage}
+\subsection{Code Coverage Calculation}
 
 Unfortunately, it is not possible to calculate and display the code coverage of tests done with the Google Testing framework within QtCreator.
 
 % TODO: find out how to calculate (and visualize?) coverage
+
+\section{Evaluation}
 
 \subsection{Bugs Found}
 
