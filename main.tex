@@ -367,6 +367,7 @@ In addition to the combination of ASA and human-based reviews, testing can also 
 
 As an example bug we chose issue \#17\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/issues/17}}. It describes a problem where the application sometimes crashes when receiving cue objects. The following lines of code caused this:
 
+% TODO: mehr kontext für den code, wieso genau crasht die app? was ist ein cue-objekt?
 \bigskip
 \begin{lstlisting}[language=C++,
 							numbers=left,
@@ -395,7 +396,7 @@ The first test case should be designed to not only reach the fault but also prod
 	An \texttt{EosOSCMessage} object, where \texttt{path().size()} equals 4.
 	
 	\item[] \underline{Expected Output}
-	
+	% TODO: epected output when test would work?
 	The application should crash, throwing a \texttt{SegmentationFault} exception.
 	
 	\item[] \underline{Fault}
@@ -467,6 +468,7 @@ The third test case is designed reach the fault while not producing an error.
 
 \subsection{Type of Existing Test Set}
 
+% TODO: warum sind keine tests vorhanden? => Manuelles und user testing wurde eingesetzt!
 There is no existing test set.
 
 \subsection{Different Scopes of Test Case Execution}
@@ -526,6 +528,7 @@ These are only two examples, which do not complete any coverage criteria. Thus, 
 
 For medium testing we added a little more context to the shown method. This will lead to a longer stack trace, as more methods are involved. One way of expanding the system under test is shown below:
 
+% TODO: Verständlichkeit anheben! Warum stellen wir das Diagramm dar, was wird genau dargestellt?
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.75\textwidth]{img/2_1_3_medium_test}
@@ -556,6 +559,7 @@ As for big testing, we decided to replace the synthetic \texttt{msg} object from
 In order to execute tests on this scope, a real tcp connection (e.g. a tcp client, which uses the running application as its server) is needed. Using this setup, we would like to perform defect testing mainly. This is, because including hardware (such as the networking card) on a real network configuration might lead to unexpected behavior, which is otherwise hard to test. Concrete, we would like to test various things on our entire networking subsystem, like packet fragmentation, packet loss and the behavior when connections are closed unexpectedly.
 
 \section{Automated Unit Tests}
+% TODO: Ist dieses Kapitel gefragt?
 
 % TODO: this is just a collection of findings, needs to be rephrased
 
@@ -687,13 +691,13 @@ The Qt Test Framework is integrated in the graphical user interface of Qt Creato
 \end{figure}
 
 \subsection{Code Coverage}
-
+% TODO: anderes tool? Wieso geht das nicht mit den verwendeten Tools?
 Unfortunately, it is not possible to calculate and display the code coverage of tests done with the Google Testing framework within QtCreator.
 
 % TODO: find out how to calculate (and visualize?) coverage
 
 \subsection{Bugs Found}
-
+% TODO: mehr beispiele!
 Even while writing the first few unit tests, we were able to identify some issues where the code was not behaving as expected.
 
 In the first case an operation was never executed because of a wrong condition in an if-statement (\texttt{rescaleTo()} in Matrix.h).
@@ -733,6 +737,9 @@ To realize performance regression tests, they would need to be executed each tim
 
 \subsection{Control Flow Graph Coverage}
 
+% TODO: ausformulieren? => Motivation: Tools bieten keine Coverage! Darum analysieren wir manuell die coverage anhand des Graphen
+
+% TODO: code neben dem Graphen darstellen?
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{img/cfg_rescale_to}
@@ -742,5 +749,6 @@ To realize performance regression tests, they would need to be executed each tim
 
 We implemented tests for node, edge, edge pair and prime path coverage for the rescaleTo() function. The control flow graph can be seen in \vref{fig:cfg_rescale_to}. [TODO: more explanation]
 
-
 \end{document}
+
+% TODO: Evaluierung fehlt! Statische Analyse und Testing fehlt! Kapitelreihenfolge evtl überdenken!
