@@ -368,6 +368,7 @@ In addition to the combination of ASA and human-based reviews, testing can also 
 As an example bug we chose issue \#17\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/issues/17}}. It describes a problem where the application sometimes crashes when receiving cue objects. The following lines of code caused this:
 
 % TODO: mehr kontext für den code, wieso genau crasht die app? was ist ein cue-objekt?
+% TODO: eventuell alle if conditions zeigen
 \bigskip
 \begin{lstlisting}[language=C++,
 							numbers=left,
@@ -497,7 +498,7 @@ This piece of code is especially interesting for our project, as it can be teste
 For small testing, the method is tested isolated (e.g. without any context). We can apply different testing strategies for this method:
 
 \begin{itemize}
-	\item[] \underline{Specification Testing}
+	\item[] \underline{Specification Testing} % TODO: better: Validation Testing?
 	
 	\begin{itemize}
 		\item[] \underline{Test Value}
@@ -531,7 +532,7 @@ For medium testing we added a little more context to the shown method. This will
 % TODO: Verständlichkeit anheben! Warum stellen wir das Diagramm dar, was wird genau dargestellt?
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.75\textwidth]{img/2_1_3_medium_test}
+	\includegraphics[width=1.1\textwidth]{img/2_1_3_medium_test}
 	\caption[Medium Testing Context]{Testing context on a medium scale}
 	\label{fig:medium_test}
 \end{figure}
@@ -556,7 +557,7 @@ When using this input domain subsets, we can define a test set, which covers eve
 
 As for big testing, we decided to replace the synthetic \texttt{msg} object from \vref{fig:medium_test} with the real network adapter. This allows us, to also include other components, which are depending on the networking module.
 
-In order to execute tests on this scope, a real TCP connection (e.g. a TCP client, which uses the running application as its server) is needed. Using this setup, we would like to perform defect testing mainly. This is, because including hardware (such as the networking card) on a real network configuration might lead to unexpected behavior, which is otherwise hard to test. Concrete, we would like to test various things on our entire networking subsystem, like packet fragmentation, packet loss and the behavior when connections are closed unexpectedly.
+In order to execute tests on this scope, a real TCP connection (e.g. a TCP client, which uses the running application as its server) is needed. Using this setup, we would like to perform defect testing mainly. This is, because including hardware (such as the networking card) on a real network configuration might lead to unexpected behavior, which is otherwise hard to test. Concrete, we would like to test various things on our entire networking subsystem, like packet fragmentation, packet loss and the behavior when connections are closed unexpectedly. % TODO: add explanation why this is difficult
 
 \section{Test Case Development}
 
