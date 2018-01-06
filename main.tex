@@ -57,7 +57,7 @@ pdfpagemode=UseOutlines
 	morecomment=[l][\color{magenta}]{\#}
 }
 % commands to skip lines:
-\lstset{numbers=left,numberblanklines=false,escapeinside=||}
+\lstset{numbers=left,numberblanklines=false,escapeinside={(*@}{@*)}}
 \let\origthelstnumber\thelstnumber
 \makeatletter
 \newcommand*\Suppressnumber{%
@@ -377,12 +377,12 @@ As an example bug we chose issue \#17\footnote{\url{https://github.com/ETCLabs/L
 							emph={int,char,double,float,unsigned},
 							emphstyle={\color{blue}},
 							title=src/OSCNetworkManager.cpp]
-void onIncomingEosMessage(const EosOSCMessage& msg) {|\Suppressnumber|
-    [...]|\Reactivatenumber{92}|
+void onIncomingEosMessage(const EosOSCMessage& msg) {(*@\Suppressnumber@*)
+    [...](*@\Reactivatenumber{92}@*)
     } else if (msg.path().size() <= 5) {
         // this message contains detailed information about a cue
-        EosCueNumber cueNumber = EosCueNumber(msg.pathPart(2), msg.pathPart(3), msg.pathPart(4));|\Suppressnumber|
-        [...]
+        EosCueNumber cueNumber = EosCueNumber(msg.pathPart(2), msg.pathPart(3), msg.pathPart(4));(*@\Suppressnumber@*)
+        [...](*@\Reactivatenumber{1}@*)
 \end{lstlisting}
 \bigskip
 
@@ -470,7 +470,7 @@ The third test case is designed reach the fault while not producing an error.
 \subsection{Type of Existing Test Set}
 
 % TODO: warum sind keine tests vorhanden? => Manuelles und user testing wurde eingesetzt!
-There is no existing test set.
+There is no existing test set. In the past, only manual testing and partly automated "monkey testing" was performed. A beta phase before releases was used to integrate the feedback from user testing.
 
 \subsection{Different Scopes of Test Case Execution}
 
@@ -569,7 +569,30 @@ TODO
 
 %TODO
 
-\subsection{Control Flow Graph Coverage}
+\subsection{Logic Expressions}
+
+\bigskip
+\begin{lstlisting}[language=C++,
+					numbers=left,
+					firstnumber=123,
+					directivestyle={\color{black}}
+					emph={int,char,double,float,unsigned},
+					emphstyle={\color{blue}},
+					title=qml/CustomControls/ComboBox2.qml]
+// if the index changed
+// or if it was not a tap and there is a DropDown item:
+if (indexChangedDuringTouch || (!isTap && dropDownItem)) {
+	// destroy the DropDown:
+	dropDownItem.destroy()
+}
+\end{lstlisting}
+\bigskip
+
+TODO
+
+%TODO
+
+\subsection{Control Flow Graph}
 
 \begin{figure}[h]
 	\centering
@@ -680,8 +703,6 @@ Setting up the Qt Testing Framework does not require any additional libraries to
 The test driver we use for the tests looks like this:
 
 \bigskip
-% TODO: replace *OR* in code with C++ logical OR ("|")
-% bitor is the official ASCII alternative to "|"
 \begin{lstlisting}[title=tests-qt/main.cpp]
 #include <QtTest>
 
@@ -698,7 +719,7 @@ int main(int argc, char** argv) {
 	
 	int returnValue = 0;
 	for (QObject* testCase: testCases) {
-		returnValue = returnValue bitor QTest::qExec(testCase, argc, argv);
+		returnValue = returnValue | QTest::qExec(testCase, argc, argv);
 	}
 	return returnValue;
 }
