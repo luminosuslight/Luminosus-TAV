@@ -587,6 +587,40 @@ if (indexChangedDuringTouch || (!isTap && dropDownItem)) {
 }
 \end{lstlisting}
 \bigskip
+$
+a = indexChangedDuringTouch\\
+b = isTap\\
+c = dropDownItem\\
+$
+
+\begin{table}[h]
+	\centering
+	\caption{\label{tab:cacc}Correlated Active Clause Coverage (CACC)}
+	\begin{tabular}{r|ccc|c|l|c|c}
+		   & $a$ & $b$ & $c$ & $a \lor (!b \land c)$ & $p_a$ & $p_b$ & $p_c$ \\ \hline
+		1 & T & T & T & T & *\quad\quad  &   &  \\
+		2 & T & T & F & T & \quad*\quad  &   &  \\
+		3 & T & F & T & T & \quad\quad*  &   &  \\
+		4 & T & F & F & T &        &   &  \\
+		5 & F & T & T & F & *\quad\quad  & * &  \\
+		6 & F & T & F & F & \quad*\quad &   &  \\
+		7 & F & F & T & T &        & * & *  \\
+		8 & F & F & F & F & \quad\quad* &   & *  \\
+	\end{tabular}
+\end{table}
+
+Minimum Test Set:
+   a b c:
+1 T T T
+5 F T T
+7 F F T
+8 F F F
+
+-> with 4 tests (1, 5, 7, 8) CACC, clause and predicate coverage is reached
+
+ clause coverage is already reached with 1, 8
+ 
+ predicate coverage is already reached with 1, 8 (or 1, 5 and so on)
 
 TODO
 
