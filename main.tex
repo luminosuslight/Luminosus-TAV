@@ -571,6 +571,19 @@ TODO
 
 \subsection{Logic Expressions}
 
+Logical expression coverage is another criterion to create test cases for a certain part of code. It aims at finding bugs and unexpected behavior by not only executing each branch of code but also evaluating all clauses in conditions separately. This is not guaranteed by other coverage criteria because short-circuiting conditions may not evaluate all their clauses, even if there are test cases for the true and false cases.
+
+We will design test cases for logical expression coverage based on the condition in the code shown in \vref{lst:logical_expression_code}.
+
+The individual clauses are:\\
+$
+a = indexChangedDuringTouch\\
+b = isTap\\
+c = dropDownItem\\
+$
+
+The predicate is $a \lor (\lnot b \land c)$.
+
 \bigskip
 \begin{lstlisting}[language=C++,
 					numbers=left,
@@ -578,26 +591,42 @@ TODO
 					directivestyle={\color{black}}
 					emph={int,char,double,float,unsigned},
 					emphstyle={\color{blue}},
-					title=qml/CustomControls/ComboBox2.qml]
+					caption=qml/CustomControls/ComboBox2.qml,
+					label=lst:logical_expression_code]
 // if the index changed
 // or if it was not a tap and there is a DropDown item:
 if (indexChangedDuringTouch || (!isTap && dropDownItem)) {
 	// destroy the DropDown:
-	dropDownItem.destroy()
+	dropDownItem.destroy();
 }
 \end{lstlisting}
 \bigskip
-$
-a = indexChangedDuringTouch\\
-b = isTap\\
-c = dropDownItem\\
-$
+
+\paragraph{Predicate Coverage (PC)}
+
+Predicate coverage is reached by finding test cases where the logical expression, the \textit{predicate}, is at least once true and false.
+
+To find suitable test cases we can use the truth table shown in \vref{tab:cacc}. One test case where the predicate is true (1, 2, 3, 4 or 7) and one where it is false (5, 6 or 8) is enough to satisfy PC, i.e. the test cases 1 and 8.
+
+\paragraph{Clause Coverage (CC)}
+
+For clause coverage it is required that each clause of the expression evaluated in at least one test case to true and false. Many test sets would fulfill this requirement, like (2, 7) or (3, 6). The test set (1, 8) has the additional benefit that it also satisfies predicate coverage.
+
+\paragraph{Correlated Active Clause Coverage (CACC)}
+
+Correlated Active Clause Coverage, where each clause is tested independently, can be reached by choosing one pair of (1, 5), (2, 6) or (3, 8) for the major clause $a$, the test cases (5, 7) for the major clause $b$ and (7, 8) for the major clause $c$.
+
+A minimal test set that satisfies PC, CC and CACC would then be (1, 5, 7, 8).
+
+\paragraph{Combinatorial Coverage (CoC)}
+
+The most comprehensive coverage criterion for logical expression based testing is to test all combinations of truth values of each clause. This needs $2^N$ tests, with $N$ being the number of clauses. All 8 combinations are shown in \vref{tab:cacc}. 
 
 \begin{table}[h]
 	\centering
 	\caption{\label{tab:cacc}Correlated Active Clause Coverage (CACC)}
 	\begin{tabular}{r|ccc|c|l|c|c}
-		   & $a$ & $b$ & $c$ & $a \lor (!b \land c)$ & $p_a$ & $p_b$ & $p_c$ \\ \hline
+		   & $a$ & $b$ & $c$ & $a \lor (\lnot b \land c)$ & $p_a$ & $p_b$ & $p_c$ \\ \hline
 		1 & T & T & T & T & *\quad\quad  &   &  \\
 		2 & T & T & F & T & \quad*\quad  &   &  \\
 		3 & T & F & T & T & \quad\quad*  &   &  \\
@@ -608,23 +637,6 @@ $
 		8 & F & F & F & F & \quad\quad* &   & *  \\
 	\end{tabular}
 \end{table}
-
-Minimum Test Set:
-   a b c:
-1 T T T
-5 F T T
-7 F F T
-8 F F F
-
--> with 4 tests (1, 5, 7, 8) CACC, clause and predicate coverage is reached
-
- clause coverage is already reached with 1, 8
- 
- predicate coverage is already reached with 1, 8 (or 1, 5 and so on)
-
-TODO
-
-%TODO
 
 \subsection{Control Flow Graph}
 
@@ -878,19 +890,8 @@ Unfortunately we could not find a feature like this in any of the regarded testi
 
 To realize performance regression tests, they would need to be executed each time on the same machine and under the same conditions, or the results would need to be normalized in respect to a prior general performance measurement. But in regard of the possible benefits this seems to be a solvable problem.
 
-
 % TODO: ausformulieren? => Motivation: Tools bieten keine Coverage! Darum analysieren wir manuell die coverage anhand des Graphen
 
-% TODO: code neben dem Graphen darstellen?
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=1.0\textwidth]{img/cfg_rescale_to}
-	\caption[Control Flow Graph rescaleTo()]{Control Flow Graph of the rescaleTo() Method}
-	\label{fig:cfg_rescale_to}
-\end{figure}
-
-We implemented tests for node, edge, edge pair and prime path coverage for the rescaleTo() function. The control flow graph can be seen in \vref{fig:cfg_rescale_to}. [TODO: more explanation]
+% TODO: Evaluierung fehlt! Statische Analyse und Testing fehlt! Kapitelreihenfolge evtl überdenken!
 
 \end{document}
-
-% TODO: Evaluierung fehlt! Statische Analyse und Testing fehlt! Kapitelreihenfolge evtl überdenken!
