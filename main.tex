@@ -907,4 +907,34 @@ To realize performance regression tests, they would need to be executed each tim
 % TODO: ausformulieren? => Motivation: Tools bieten keine Coverage! Darum analysieren wir manuell die coverage anhand des Graphen
 
 
+\chapter{Verification}
+
+\section{Exhaustive Test Case Generation}
+
+\begin{itemize}
+	\item only very few public available tools for C++, complex to install (i.e. compile LLVM), difficult to use (source code modification with 'symbolic type' required)
+	\item many tools for C, but mostly outdated and unmaintained, same problems as with C++ tools
+	\item we tried 'Klee', applicable for all languages compiled to LLVM intermediate language, were not able to get usable results for 'projects' longer than a few lines of code
+	\item another option would be to translate code to language with better tool support like Java or C\# (Pex, IntelliTest), can help to generate test cases but completeness and correctness not guaranteed due to potentially invalid translation / language differences
+\end{itemize}
+
+
+\section{ASA without Optimistic Inaccuray}
+
+\begin{itemize}
+	\item PolySpace claims not to have optimistic inaccuracy for some kind of faults like nullptr dereferencing, it uses symbolic execution among other techniques
+	\item compilers don't have optimistic inaccuracy for some cases (?)
+\end{itemize}
+
+
+\section{Theorem Proving}
+
+\begin{itemize}
+	\item would be useful for: network protocols (why?), color conversions?
+	\item sometimes it is enough to prove a weaker theorem, for color conversions it is often enough that they convert a valid color to another valid color, but not whether it is the correct color
+	\item there are no security concerns or sensible data in our application -> demand for verification is rather low
+\end{itemize}
+
+
+
 \end{document}
