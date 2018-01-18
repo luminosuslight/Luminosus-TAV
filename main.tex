@@ -841,9 +841,14 @@ The Qt Test Framework is integrated in the graphical user interface of Qt Creato
 	\label{fig:qtcreator_test_results_qt}
 \end{figure}
 
-% TODO: anderes tool? Wieso geht das nicht mit den verwendeten Tools?
+
 \subsection{Code Coverage Calculation}
-Unfortunately, it is not possible to calculate and display the code coverage of tests done with the Google Testing framework within QtCreator.
+
+It is not possible to calculate and display the code coverage of tests done with the Google Testing framework or Qt Test within QtCreator.
+
+Fortunately at least the GCC compiler has a compilation option that modifies the program to log the number of times each line of code is executed. The results are stored in separate files next to the executable after the first run of the software and can be analyzed with a tool called \textit{gcov}\footnote{\url{https://gcc.gnu.org/onlinedocs/gcc/Gcov.html}} or visualized as HTML pages with \textit{lcov}\footnote{\url{http://ltp.sourceforge.net/coverage/lcov.php}}. The coverage results for some of the source files in our project can be seen in \vref{fig:test-coverage}.
+
+Even while gcov can only calculate line coverage and not branch coverage or even more complexe coverage criterions, it is already a very useful metric to get insights which parts of the application are tested in an automated way. If the line coverage for some files is under 100\%, for example after a code change, this is a clear indicator that tests are missing.
 
 \begin{figure}[h]
 	\centering
