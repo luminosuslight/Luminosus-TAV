@@ -50,6 +50,10 @@ void main(int argc, char** argv) {
     float g = 0.f;
     float b = 0.f;
 
+    klee_make_symbolic(&r, sizeof(r), "r");
+    klee_make_symbolic(&g, sizeof(g), "g");
+    klee_make_symbolic(&b, sizeof(b), "b");
+
     hsvToRgb(0.2f, 0.2f, 0.2f, &r, &g, &b);
     fprintf(stdout, "R: %f, G: %f, B: %f", r, g, b);
 }
