@@ -221,3 +221,13 @@ TSWLatexianTemp*
 *-tags.tex
 
 .directory
+
+MatrixVerification/\.vs/
+
+MatrixVerification/MatrixVerification/bin/
+
+MatrixVerification/MatrixVerification/obj/
+
+MatrixVerification/MatrixVerification\.Tests/bin/
+
+MatrixVerification/MatrixVerification\.Tests/obj/

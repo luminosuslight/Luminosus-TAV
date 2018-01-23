@@ -923,6 +923,78 @@ To realize performance regression tests, they would need to be executed each tim
 	\item another option would be to translate code to language with better tool support like Java or C\# (Pex, IntelliTest), can help to generate test cases but completeness and correctness not guaranteed due to potentially invalid translation / language differences
 \end{itemize}
 
+\subsection{KLEE}
+
+\begin{itemize}
+	\item \href{http://klee.github.io}{KLEE reference}
+	\item testing of C code, therefore we translated our implementation to C
+	\item tested \texttt{void hsvToRgb(float h, float s, float v, float* r, float* g, float* b)} using KLEE
+	\item ran into issues, because KLEE does not support floating point values
+	\item KLEE generated only one test, with all values zero. this does not help testing the program at all
+\end{itemize}
+
+\begin{lstlisting}[language=bash, numbers=none]
+~/verification$ klee Matrix.bc
+KLEE: output directory is "/home/klee/verification/klee-out-0"
+KLEE: Using STP solver backend
+KLEE: WARNING ONCE: silently concretizing (reason: floating point) expression (ReadLSB w32 0 s) to value 0 (/home/klee/verification/Matrix.c:24)
+
+KLEE: done: total instructions = 58
+KLEE: done: completed paths = 1
+KLEE: done: generated tests = 1
+
+~/verification$ ktest-tool klee-last/test000001.ktest
+ktest file : 'klee-last/test000001.ktest'
+args       : ['Matrix.bc']
+num objects: 3
+object    0: name: b'h'
+object    0: size: 4
+object    0: data: b'\x00\x00\x00\x00'
+object    1: name: b's'
+object    1: size: 4
+object    1: data: b'\x00\x00\x00\x00'
+object    2: name: b'v'
+object    2: size: 4
+object    2: data: b'\x00\x00\x00\x00'
+\end{lstlisting}
+
+\subsection{Visual Studio Intelli Test}
+
+\begin{itemize}
+	\item testing of managed C-Sharp code (.NET framework must be target platform, no x64 support)
+	\item translated our \texttt{void hsvToRgb(...)} to C-Sharp and generated test cases
+	\item added some assertions and assumptions for better results with Pex
+\end{itemize}
+
+\begin{lstlisting}[language=C]
+[PexMethod]
+public void HsvToRgbTest([PexAssumeUnderTest]Matrix target,
+	float h,
+	float s,
+	float v,
+	out float r,
+	out float g,
+	out float b
+)
+{
+	PexAssume.IsTrue(h >= 0.0f && h <= 1.0f);
+	PexAssume.IsTrue(s >= 0.0f && s <= 1.0f);
+	PexAssume.IsTrue(v > 0.0f && v <= 1.0f);
+	
+	target.HsvToRgb(h, s, v, out r, out g, out b);
+	
+	PexAssert.IsTrue(r >= 0.0f && r <= 1.0f);
+	PexAssert.IsTrue(g >= 0.0f && g <= 1.0f);
+	PexAssert.IsTrue(b >= 0.0f && b <= 1.0f);
+}
+\end{lstlisting}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/matrix_intelli_test.PNG}
+	\caption[Intelli Test Results]{Intelli Test Results}
+	\label{fig:matrix_intelli_test}
+\end{figure}
 
 \section{ASA without Optimistic Inaccuray}
 
