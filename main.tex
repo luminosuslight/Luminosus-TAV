@@ -933,12 +933,17 @@ To realize performance regression tests, they would need to be executed each tim
 
 \subsection{Polyspace}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=1.0\textwidth]{img/polyspace_code_prover}
-	\caption[Polyspace Code Prover Results]{Polyspace Code Prover Results}
-	\label{fig:polyspace_code_prover}
-\end{figure}
+Polyspace can analyze code and prove the absence or existence of run time errors by using abstract interpretation.
+
+The detected issues are separated in four categories\footnote{\url{https://www.mathworks.com/products/polyspace-code-prover/features.html}}:
+ \begin{itemize}
+ 	\item \textbf{Green:} proven free of run-time errors
+ 	\item \textbf{Red:} proven faulty each time the operation is executed
+ 	\item \textbf{Gray:} proven unreachable (may indicate a functional issue)
+ 	\item \textbf{Orange:} unproven operation may be faulty under certain conditions
+ \end{itemize}
+
+The detected issues for our code example (hsv2rgb) can be seen in \vref{fig:polyspace_categories}.
 
 \begin{figure}[h]
 	\centering
@@ -947,6 +952,8 @@ To realize performance regression tests, they would need to be executed each tim
 	\label{fig:polyspace_categories}
 \end{figure}
 
+Furthermore Polyspace can show the possible value range of each variable at every given time as a result of the automatic symbolic execution. These information can also be very useful for debugging, an example can be seen in \vref{fig:polyspace_symbolic_execution}.
+
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\textwidth]{img/polyspace_symbolic_execution}
@@ -954,12 +961,16 @@ To realize performance regression tests, they would need to be executed each tim
 	\label{fig:polyspace_symbolic_execution}
 \end{figure}
 
+Polyspace can also display useful information about the state variables in each line of code, for example if it could be null (see \vref{fig:polyspace_variable_information}).
+
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1.0\textwidth]{img/polyspace_invariants}
-	\caption[Polyspace Invariants]{Invariants found by Polyspace}
-	\label{fig:polyspace_invariants}
+	\includegraphics[width=1.0\textwidth]{img/polyspace_variable_information}
+	\caption[Polyspace Variable Information]{Polyspace Variable Information}
+	\label{fig:polyspace_variable_information}
 \end{figure}
+
+Unfortunately it is very hard to compile code with complex dependencies (like Qt) in Polyspace and we had to rewrite the \texttt{hsv2rgb()} function with pure C++ code and STL containers. This may introduce new errors and it may behave differently compared to the Qt container classes.
 
 \section{Theorem Proving}
 
