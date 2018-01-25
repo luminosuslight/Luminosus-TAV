@@ -1033,14 +1033,15 @@ object    2: data: b'\x00\x00\x00\x00'
 
 The test case consists of zeros for all input values, which is not very helpful for verifying properties within our translated code. Thus, we did not further investigate KLEE.
 
-\subsection{Visual Studio Intelli Test}
+\subsection{Visual Studio IntelliTest}
 
-\begin{itemize}
-	\item testing of managed C-Sharp code (.NET framework must be target platform, no x64 support)
-	\item translated our \texttt{void hsvToRgb(...)} to C-Sharp and generated test cases
-	\item added some assertions and assumptions for better results with Pex
-\end{itemize}
+IntelliTest is Microsofts symbolic execution testing framework, which is based on PEX\footnote{\url{https://pex4fun.com}}. It is embedded in Visual Studio and can handle managed .NET code.
 
+In order to test our code, we had to translate it to managed .NET code, where C\# was our language of choice. With only very little effort, Visual Studio generated a testing project and also generated code for our method. All that was left to do, was to add assumptions and assertions to increase the value of the generated test cases.
+
+The final code for letting IntelliTest generate test cases for our \texttt{HsvToRgb} is shown below:
+
+\bigskip
 \begin{lstlisting}[language=C]
 [PexMethod]
 public void HsvToRgbTest([PexAssumeUnderTest]Matrix target,
@@ -1063,6 +1064,9 @@ public void HsvToRgbTest([PexAssumeUnderTest]Matrix target,
 	PexAssert.IsTrue(b >= 0.0f && b <= 1.0f);
 }
 \end{lstlisting}
+\bigskip
+
+Although IntelliTest generated 6 different tests, which all met our specification, the testing framework reported some issues about floating point numbers. This also seems to be the reason for the low variety of the \texttt{s} and \texttt{v} parameters. Additionally, IntelliTests reported, that the stack observation, used for test case generation, is limited in our case. This might also lead to less test cases being generated overall.
 
 \begin{figure}[h]
 	\centering
@@ -1070,6 +1074,9 @@ public void HsvToRgbTest([PexAssumeUnderTest]Matrix target,
 	\caption[Intelli Test Results]{Intelli Test Results}
 	\label{fig:matrix_intelli_test}
 \end{figure}
+\bigskip
+
+Overall, we can say, that we liked the ease which was provided by the seamless integration of IntelliTest into Visual Studio. The test case generation was fast and well configurable. We were glad to get at least some results, in contrast to KLEE, but wished for better support for more mathematical focused code (such as floating point based calculation).
 
 \section{ASA without Optimistic Inaccuray}
 
