@@ -561,13 +561,58 @@ In order to execute tests on this scope, a real TCP connection (e.g. a TCP clien
 
 \section{Test Case Development}
 
-There are multiple different approaches to generated test values for a specific test case to reach a certain kind of coverage. We will discuss some of them the following sections, using the \texttt{ColorMatrix::rescaleTo()} method as an example.
+There are multiple different approaches to generated test values for a specific test case to reach a certain kind of coverage. We will discuss some of them the following sections, using the \texttt{FileSystemManager::saveFile()} and  \texttt{ColorMatrix::rescaleTo()} methods as examples.
 
 \subsection{Input Domain Modeling}
 
-TODO
+One approach to generate test cases for a function is Input Domain Modeling (IDM). IDM can either be done functionality or interface based. In the first case only the type of the arguments is considered, regardless of the functionality behind the code, while in the latter case the combined meaning of the arguments is used to partition the input domain.
 
-%TODO
+In this section we want to find test cases using IDM for the method \texttt{saveFile()} shown in \vref{lst:idm_code} and compare interface to functionality-based IDM.
+
+\bigskip
+\begin{lstlisting}[language=C++,
+							numbers=left,
+							firstnumber=47,
+							directivestyle={\color{black}}
+							emph={int,char,double,float,unsigned},
+							emphstyle={\color{blue}},
+							caption=src/FileSystemManager.h,
+							label=lst:idm_code]
+/**
+* @brief saveFile saves QByteArray object to a file in the data dir
+* It overwrites the file if it already exists.
+* @param dir sub dir inside the app data dir
+* @param filename for the file that will be written
+* @param content to be written
+* @return true if the file was successfully written
+*/
+bool saveFile(QString dir, QString filename, QByteArray content) const;
+\end{lstlisting}
+\bigskip
+
+\paragraph{Interface-Based}
+
+Interface based partitioning of the arguments of \texttt{saveFile()} could for example result in the characteristics $q_1$ and $q_2$ that describe the length of the strings \texttt{dir} and \texttt{filename} and $q_3$ as the size of the QByteArray in \texttt{content}. $q_1$ and $q_2$ have the partitions $length=0$, $length=1$ and $length>1$ and $q_3$ is similarly divided into $size=0$, $size=1$ and $size>1$.
+
+This would mean that $3*3*3=18$ test cases are required to cover \textit{All Combinations (ACoC)} of the blocks of the interface based input domain.
+The number of test cases needed can be decreased by using the \textit{Each Choice (EC)} criterion. The number of test cases would then be the size of the largest characteristic, being 3 in this case. With \textit{Pair Wise (PW)} choice $3*3=9$ test cases would be required.
+In the end the most common criterion to choose combinations of blocks is \textit{Base Choice (BC)}. This would require $1+(2+2+2)=7$ test cases and leads to many test cases that are close to the real use of the function.
+
+\paragraph{Functionality-Based}
+
+For functionality based partitioning only two characteristics are required in this case: $q_1$ as the validity of the provided file path (including the filename) and $q_2$ as the size of the content in relation to the available disc space. The partitions for $q_1$ are \textit{valid filename} and \textit{invalid filename} (respective to the used filesystem, i.e. NTFS). $q_2$ can be divided into $size=0$, $size=1$, $1<size<=availableSpace$ and $size>availableSpace$.
+
+To cover this partitioning the following numbers of test cases are required:
+\begin{itemize}
+	\item \textit{All Combinations (ACoC)}: $2*4=8$ test cases
+	\item \textit{Each Choice (EC)}: $4$ test cases
+	\item \textit{Pair Wise (PW)}: $2*4=8$ test cases
+	\item \textit{Base Choice (BC)}: $1+(1+3)=5$ test cases
+\end{itemize}
+
+\paragraph{Comparison}
+
+In our case functionality based testing will most probably lead to much more interesting results. Because the interface based method only considers the length of the strings provided for \texttt{dir} and \texttt{filename} the resulting paths will be invalid in most of the cases and the function will then always fail. The functionality based approach takes this into account and gives therefore the chance to see the effect of the other argument, the content of the file, on the result of the function.
 
 \subsection{Logic Expressions}
 
@@ -1005,7 +1050,7 @@ public void HsvToRgbTest([PexAssumeUnderTest]Matrix target,
 
 \subsection{Polyspace}
 
-Polyspace can analyze code and prove the absence or existence of run time errors by using abstract interpretation.
+Polyspace can analyze code and prove the existence or absence of run time errors by using abstract interpretation. Beside the "Bug Finder" module used in the ASA section, it also offers "Code Prover" which is specialized in proving certain properties beyond classic static analysis.
 
 The detected issues are separated in four categories\footnote{\url{https://www.mathworks.com/products/polyspace-code-prover/features.html}}:
  \begin{itemize}
@@ -1015,7 +1060,7 @@ The detected issues are separated in four categories\footnote{\url{https://www.m
  	\item \textbf{Orange:} unproven operation may be faulty under certain conditions
  \end{itemize}
 
-The detected issues for our code example (hsv2rgb) can be seen in \vref{fig:polyspace_categories}.
+The Code Prover results for our code example (hsv2rgb) can be seen in \vref{fig:polyspace_categories}.
 
 \begin{figure}[h]
 	\centering
