@@ -1080,14 +1080,11 @@ Overall, we can say, that we liked the ease which was provided by the seamless i
 
 \section{ASA without Optimistic Inaccuray}
 
-\begin{itemize}
-	\item PolySpace claims not to have optimistic inaccuracy for some kind of faults like nullptr dereferencing, it uses symbolic execution among other techniques
-	\item compilers don't have optimistic inaccuracy for some cases (?)
-\end{itemize}
+Because manual theorem proving can be very hard and time consuming, it is worth to have a look at tools that claim to prove the absence of certain failures without optimistic inaccuracy. In the following section we want to analyze how well this can be done for our code and what additional benefits automatic symbolic execution can have by using the only tool we found for this for modern C++ code, Polyspace.
 
 \subsection{Polyspace}
 
-Polyspace can analyze code and prove the existence or absence of run time errors by using abstract interpretation. Beside the "Bug Finder" module used in the ASA section, it also offers "Code Prover" which is specialized in proving certain properties beyond classic static analysis.
+This commercial tool can analyze code and prove the existence or absence of run time errors by using abstract interpretation. Beside the "Bug Finder" module used in the ASA section, it also offers "Code Prover" which is specialized in proving certain properties beyond classic static analysis.
 
 The detected issues are separated in four categories\footnote{\url{https://www.mathworks.com/products/polyspace-code-prover/features.html}}:
  \begin{itemize}
