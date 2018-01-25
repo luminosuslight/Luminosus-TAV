@@ -367,8 +367,6 @@ In addition to the combination of ASA and human-based reviews, testing can also 
 
 As an example bug we chose issue \#17\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/issues/17}}. It describes a problem where the application sometimes crashes when receiving cue objects. The following lines of code caused this:
 
-% TODO: mehr kontext für den code, wieso genau crasht die app? was ist ein cue-objekt?
-% TODO: eventuell alle if conditions zeigen
 \bigskip
 \begin{lstlisting}[language=C++,
 							numbers=left,
@@ -397,8 +395,8 @@ The first test case should be designed to not only reach the fault but also prod
 	An \texttt{EosOSCMessage} object, where \texttt{path().size()} equals 4.
 	
 	\item[] \underline{Expected Output}
-	% TODO: epected output when test would work?
-	The application should crash, throwing a \texttt{SegmentationFault} exception.
+	
+	The application should dispose the message, since its too short.
 	
 	\item[] \underline{Fault}
 	
@@ -469,7 +467,6 @@ The third test case is designed reach the fault while not producing an error.
 
 \subsection{Type of Existing Test Set}
 
-% TODO: warum sind keine tests vorhanden? => Manuelles und user testing wurde eingesetzt!
 There is no existing test set. In the past, only manual testing and partly automated "monkey testing" was performed. A beta phase before releases was used to integrate the feedback from user testing.
 
 \subsection{Different Scopes of Test Case Execution}
@@ -536,6 +533,7 @@ For medium testing we added a little more context to the shown method. This will
 	\caption[Medium Testing Context]{Testing context on a medium scale}
 	\label{fig:medium_test}
 \end{figure}
+
 
 When testing the displayed context, we need start testing the method \texttt{void OSCNetworkManager::processIncomingRawData(QByteArray msgData)}. Thus, we span a call graph as shown in \vref{fig:medium_test}. The edges can be reached by manipulating the \texttt{msg} input parameter.
 
@@ -954,31 +952,54 @@ Unfortunately we could not find a feature like this in any of the regarded testi
 
 To realize performance regression tests, they would need to be executed each time on the same machine and under the same conditions, or the results would need to be normalized in respect to a prior general performance measurement. But in regard of the possible benefits this seems to be a solvable problem.
 
-% TODO: ausformulieren? => Motivation: Tools bieten keine Coverage! Darum analysieren wir manuell die coverage anhand des Graphen
-
 
 \chapter{Verification}
 
-\section{Exhaustive Test Case Generation}
+Within the next chapter, we will present and discuss different approaches of verifying properties within a given piece of code. The main focus will be directed towards various tools, which support different strategies of verification.
 
-\begin{itemize}
-	\item only very few public available tools for C++, complex to install (i.e. compile LLVM), difficult to use (source code modification with 'symbolic type' required)
-	\item many tools for C, but mostly outdated and unmaintained, same problems as with C++ tools
-	\item we tried 'Klee', applicable for all languages compiled to LLVM intermediate language, were not able to get usable results for 'projects' longer than a few lines of code
-	\item another option would be to translate code to language with better tool support like Java or C\# (Pex, IntelliTest), can help to generate test cases but completeness and correctness not guaranteed due to potentially invalid translation / language differences
-\end{itemize}
+\section{Test Case Generation}
+
+The first of these strategies is to generate test cases automatically. This is especially useful, if exhaustive testing is not an option. Therefore, we rely on methods such as symbolic execution to find crucial edge cases and other important inputs, which might lead to unexpected behavior of our software. If done correctly, the generated test cases can prove some properties of the verified code.
+
+We started searching tools specialized in verifying C++ code. However, we realized that tooling support for C++ is rather rare within the public domain. Additionally, many of the tools we found were outdated and no longer maintained, making it impossible to use them with our modern C++ code. The only tool we were able to use for our C++ code was Polyspace.
+In order to find some more tools we could test, we started looking for other supported languages. We found KLEE\footnote{\label{klee_reference}\url{http://klee.github.io/}, accessed 25th January 2018}, a symbolic execution tool for C. Additionally, we tried IntelliTest\footnote{\url{https://docs.microsoft.com/en-us/visualstudio/test/intellitest-manual/introduction}}, another symbolic execution tool for C\#. We had to translate our code to valid C and C\# code when trying these tools, which limited the amount of code we could verify. Therefore, we decided to translate and test our \texttt{HSV} to \texttt{RGB} conversion method.
+At this point, we would like to mention that translating code comes with the risk of changing the behavior. Thus, the correctness of the translation must be proven in order to completely verify the given code. However, we verified our code only for the sake of finding and using the above mentioned tools, and therefore, we will not prove that our translation is correct.
 
 \subsection{KLEE}
 
-\begin{itemize}
-	\item \href{http://klee.github.io}{KLEE reference}
-	\item testing of C code, therefore we translated our implementation to C
-	\item tested \texttt{void hsvToRgb(float h, float s, float v, float* r, float* g, float* b)} using KLEE
-	\item ran into issues, because KLEE does not support floating point values
-	\item KLEE generated only one test, with all values zero. this does not help testing the program at all
-\end{itemize}
+"\emph{KLEE is a symbolic virtual machine built on top of the LLVM compiler infrastructure [...]}"\footref{klee_reference}
 
-\begin{lstlisting}[language=bash, numbers=none]
+
+We installed KLEE on a virtual Ubuntu machine, using the pre-build docker image provided in their manual. We had to modify our code translation, telling KLEE which variables should be tested (\texttt{klee\_make\_symbolic}). We ended up with following code:
+
+\begin{lstlisting}[language=C, firstnumber=21]
+void hsvToRgb(float h, float s, float v, float* r, float* g, float* b) {(*@\Suppressnumber@*)
+	[...](*@\Reactivatenumber{46}@*)
+}
+
+void main(int argc, char** argv) {
+	float r = 0.f;
+	float g = 0.f;
+	float b = 0.f;
+	
+	float h = 0.f;
+	float s = 0.f;
+	float v = 0.f;
+	
+	klee_make_symbolic(&h, sizeof(h), "h");
+	klee_make_symbolic(&s, sizeof(s), "s");
+	klee_make_symbolic(&v, sizeof(v), "v");
+	
+	hsvToRgb(h, s, v, &r, &g, &b);
+}
+\end{lstlisting}
+\bigskip
+
+We compiled the code, using the included Clang compiler and enabled the \texttt{-emit-llvm} flag, so that KLEE could operate on the result.
+Afterwards, we executed KLEE as follows:
+
+\bigskip
+\begin{lstlisting}[language=bash, numbers=none, frame=single]
 ~/verification$ klee Matrix.bc
 KLEE: output directory is "/home/klee/verification/klee-out-0"
 KLEE: Using STP solver backend
@@ -987,7 +1008,13 @@ KLEE: WARNING ONCE: silently concretizing (reason: floating point) expression (R
 KLEE: done: total instructions = 58
 KLEE: done: completed paths = 1
 KLEE: done: generated tests = 1
+\end{lstlisting}
+\bigskip
 
+Unfortunately, KLEE does not support floating point numbers, resulting in just one test case being generated.
+
+\bigskip
+\begin{lstlisting}[language=bash, numbers=none, frame=single]
 ~/verification$ ktest-tool klee-last/test000001.ktest
 ktest file : 'klee-last/test000001.ktest'
 args       : ['Matrix.bc']
@@ -1002,6 +1029,9 @@ object    2: name: b'v'
 object    2: size: 4
 object    2: data: b'\x00\x00\x00\x00'
 \end{lstlisting}
+\bigskip
+
+The test case consists of zeros for all input values, which is not very helpful for verifying properties within our translated code. Thus, we did not further investigate KLEE.
 
 \subsection{Visual Studio Intelli Test}
 
