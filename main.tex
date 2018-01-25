@@ -559,7 +559,7 @@ In order to execute tests on this scope, a real TCP connection (e.g. a TCP clien
 
 \section{Test Case Development}
 
-There are multiple different approaches to generated test values for a specific test case to reach a certain kind of coverage. We will discuss some of them the following sections, using the \texttt{FileSystemManager::saveFile()} and  \texttt{ColorMatrix::rescaleTo()} methods as examples.
+There are multiple different approaches to generated test values for a specific test case to reach a certain kind of coverage. We will discuss some of them in the following sections, using the \texttt{FileSystemManager::saveFile()} and  \texttt{ColorMatrix::rescaleTo()} methods as examples.
 
 \subsection{Input Domain Modeling}
 
@@ -959,7 +959,7 @@ Within the next chapter, we will present and discuss different approaches of ver
 
 \section{Test Case Generation}
 
-The first of these strategies is to generate test cases automatically. This is especially useful, if exhaustive testing is not an option. Therefore, we rely on methods such as symbolic execution to find crucial edge cases and other important inputs, which might lead to unexpected behavior of our software. If done correctly, the generated test cases can prove some properties of the verified code.
+The first of these strategies is to generate test cases automatically. This is especially useful if exhaustive testing is not an option. Therefore, we rely on methods such as symbolic execution to find crucial edge cases and other important inputs, which might lead to unexpected behavior of our software. If done correctly, the generated test cases can prove some properties of the verified code.
 
 We started searching tools specialized in verifying C++ code. However, we realized that tooling support for C++ is rather rare within the public domain. Additionally, many of the tools we found were outdated and no longer maintained, making it impossible to use them with our modern C++ code. The only tool we were able to use for our C++ code was Polyspace.
 In order to find some more tools we could test, we started looking for other supported languages. We found KLEE\footnote{\label{klee_reference}\url{http://klee.github.io/}, accessed 25th January 2018}, a symbolic execution tool for C. Additionally, we tried IntelliTest\footnote{\url{https://docs.microsoft.com/en-us/visualstudio/test/intellitest-manual/introduction}}, another symbolic execution tool for C\#. We had to translate our code to valid C and C\# code when trying these tools, which limited the amount of code we could verify. Therefore, we decided to translate and test our \texttt{HSV} to \texttt{RGB} conversion method.
@@ -970,7 +970,7 @@ At this point, we would like to mention that translating code comes with the ris
 "\emph{KLEE is a symbolic virtual machine built on top of the LLVM compiler infrastructure [...]}"\footref{klee_reference}
 
 
-We installed KLEE on a virtual Ubuntu machine, using the pre-build docker image provided in their manual. We had to modify our code translation, telling KLEE which variables should be tested (\texttt{klee\_make\_symbolic}). We ended up with following code:
+We installed KLEE on a virtual Ubuntu machine, using the pre-build docker image provided in their manual. We had to modify our code translation, telling KLEE which variables should be tested (\texttt{klee\_make\_symbolic}). We ended up with the following code:
 
 \begin{lstlisting}[language=C, firstnumber=21]
 void hsvToRgb(float h, float s, float v, float* r, float* g, float* b) {(*@\Suppressnumber@*)
@@ -1066,7 +1066,7 @@ public void HsvToRgbTest([PexAssumeUnderTest]Matrix target,
 \end{lstlisting}
 \bigskip
 
-Although IntelliTest generated 6 different tests, which all met our specification, the testing framework reported some issues about floating point numbers. This also seems to be the reason for the low variety of the \texttt{s} and \texttt{v} parameters. Additionally, IntelliTests reported, that the stack observation, used for test case generation, is limited in our case. This might also lead to less test cases being generated overall.
+Although IntelliTest generated 6 different tests, which all met our specification, the testing framework reported some issues about floating point numbers. This also seems to be the reason for the low variety of the \texttt{s} and \texttt{v} parameters. Additionally, IntelliTest reported that the stack observation, used for test case generation, is limited in our case. This might also lead to less test cases being generated.
 
 \begin{figure}[h]
 	\centering
@@ -1080,7 +1080,7 @@ Overall, we can say, that we liked the ease which was provided by the seamless i
 
 \section{ASA without Optimistic Inaccuray}
 
-Because manual theorem proving can be very hard and time consuming, it is worth to have a look at tools that claim to prove the absence of certain failures without optimistic inaccuracy. In the following section we want to analyze how well this can be done for our code and what additional benefits automatic symbolic execution can have by using the only tool we found for this for modern C++ code, Polyspace.
+Because manual theorem proving can be quite difficult and time consuming, it is worth to have a look at tools that claim to automatically prove the absence of certain failures without optimistic inaccuracy. In the following section we want to analyze how well this can be done for our code and what additional benefits automated symbolic execution can have by using the only tool we found for modern C++ code, Polyspace.
 
 \subsection{Polyspace}
 
@@ -1103,7 +1103,7 @@ The Code Prover results for our code example (hsv2rgb) can be seen in \vref{fig:
 	\label{fig:polyspace_categories}
 \end{figure}
 
-Furthermore Polyspace can show the possible value range of each variable at every given time as a result of the automatic symbolic execution. These information can be very useful for debugging, too, an example can be seen in \vref{fig:polyspace_symbolic_execution}.
+Furthermore Polyspace can show the possible value range of each variable at every given time as a result of the automatic symbolic execution. These information can be very useful for debugging, too. An example for these information can be seen in \vref{fig:polyspace_symbolic_execution}.
 
 \begin{figure}[h]
 	\centering
@@ -1132,9 +1132,7 @@ Proving certain properties of source code is especially useful for "mission crit
 Anyway it would still be good to prove for example the correctness of the implementation of the network protocols used to communicate with the console to be able to guarantee a stable connection. Being able to exclude the implementation of the protocols as a source of failures is a huge facilitation while looking for the origin of a connection problem, too.
 
 \begin{itemize}
-	\item would be useful for: network protocols (why?), color conversions?
 	\item sometimes it is enough to prove a weaker theorem, for color conversions it is often enough that they convert a valid color to another valid color, but not whether it is the correct color
-	\item there are no security concerns or sensible data in our application -> demand for verification is rather low
 \end{itemize}
 
 
