@@ -1099,7 +1099,7 @@ The Code Prover results for our code example (hsv2rgb) can be seen in \vref{fig:
 	\label{fig:polyspace_categories}
 \end{figure}
 
-Furthermore Polyspace can show the possible value range of each variable at every given time as a result of the automatic symbolic execution. These information can also be very useful for debugging, an example can be seen in \vref{fig:polyspace_symbolic_execution}.
+Furthermore Polyspace can show the possible value range of each variable at every given time as a result of the automatic symbolic execution. These information can be very useful for debugging, too, an example can be seen in \vref{fig:polyspace_symbolic_execution}.
 
 \begin{figure}[h]
 	\centering
@@ -1108,7 +1108,7 @@ Furthermore Polyspace can show the possible value range of each variable at ever
 	\label{fig:polyspace_symbolic_execution}
 \end{figure}
 
-Polyspace can also display useful information about the state variables in each line of code, for example if it could be null (see \vref{fig:polyspace_variable_information}).
+Polyspace can also display useful information about the state of variables for each line of code, for example if the content of a variable could be null (see \vref{fig:polyspace_variable_information}).
 
 \begin{figure}[h]
 	\centering
@@ -1117,7 +1117,9 @@ Polyspace can also display useful information about the state variables in each 
 	\label{fig:polyspace_variable_information}
 \end{figure}
 
-Unfortunately it is very hard to compile code with complex dependencies (like Qt) in Polyspace and we had to rewrite the \texttt{hsv2rgb()} function with pure C++ code and STL containers. This may introduce new errors and it may behave differently compared to the Qt container classes.
+Unfortunately it is very hard to compile code with complex dependencies like Qt in Polyspace and we had to rewrite the \texttt{hsv2rgb()} function with pure C++ code and STL containers. This may introduce new errors and behave differently compared to the Qt container classes.
+
+In the end Polyspace has proven to be a very useful tool and especially for developing and optimizing the critical parts of an application it can be worth the money it costs.
 
 \section{Theorem Proving}
 
