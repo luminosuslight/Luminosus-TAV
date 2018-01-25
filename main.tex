@@ -1091,6 +1091,10 @@ Unfortunately it is very hard to compile code with complex dependencies (like Qt
 
 \section{Theorem Proving}
 
+Proving certain properties of source code is especially useful for "mission critical" parts, like single points of failures that could render the whole application useless if they fail, and security relevant features that handle or protect sensible user data. In our application there are no essential parts of either of these categories, as the critical parts of lighting control are implemented in the lighting console and not in this companion app and no sensible information is handled.
+
+Anyway it would still be good to prove for example the correctness of the implementation of the network protocols used to communicate with the console to be able to guarantee a stable connection. Being able to exclude the implementation of the protocols as a source of failures is a huge facilitation while looking for the origin of a connection problem, too.
+
 \begin{itemize}
 	\item would be useful for: network protocols (why?), color conversions?
 	\item sometimes it is enough to prove a weaker theorem, for color conversions it is often enough that they convert a valid color to another valid color, but not whether it is the correct color
