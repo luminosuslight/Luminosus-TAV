@@ -1109,6 +1109,16 @@ Anyway it would still be good to prove for example the correctness of the implem
 %	\item sometimes it is enough to prove a weaker theorem, for color conversions it is often enough that they convert a valid color to another valid color, but not whether it is the correct color
 %\end{itemize}
 
+\chapter{Conclusion}
+
+Summarizing our findings during this semester we can state that (a) finding tools which support C++ as language in general is rather hard, since most tools are no longer maintained or only available for commercial use. Additionally C++ is fast evolving language thus leaving tools often outdated. (b) The few tools we found, especially for ASA, helped a lot. The flawless integration of Clang Static Analyzer in our IDE prevented a lot of faults already during writing. This leads indirectly to a shorter compilation time, since those faults would otherwise only had been recognized later on. (c) At this point in the project, the expected benefit of adding tests with high coverage is quite low, since the majority of issues was already reported and fixed. However, testing new functionality in the future would be reasonable.
+
+Although verification is well supported by tools like Polyspace, the overall demand within our application is rather low. This is because neither use any sensible personal data nor does the software has the responsibility for blackouts on the stage.\\
+
+\noindent If we could start over with the development of the project, we would put more emphasis on static analysis. Concrete, we would rely on a greater variety of tools.
+
+Additionally, we would establish a testing philosophy to write tests for known defects, thus preventing them to reappear in a later version.
+
 
 
 \end{document}
