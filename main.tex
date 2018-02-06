@@ -566,7 +566,7 @@ There are multiple different approaches to generated test values for a specific 
 
 One approach to generate test cases for a function is Input Domain Modeling (IDM). IDM can either be done functionality or interface based. In the first case only the type of the arguments is considered, regardless of the functionality behind the code, while in the latter case the combined meaning of the arguments is used to partition the input domain.
 
-In this section we want to find test cases using IDM for the method \texttt{saveFile()} shown in \vref{lst:idm_code} and compare interface to functionality-based IDM.
+In this section we want to find test cases using IDM for the method \texttt{saveFile()} shown in listing \ref{lst:idm_code} and compare interface to functionality-based IDM.
 
 \bigskip
 \begin{lstlisting}[language=C++,
@@ -617,7 +617,7 @@ In our case functionality based testing will most probably lead to much more int
 
 Logical expression coverage is another criterion to create test cases for a certain part of code. It aims at finding bugs and unexpected behavior by not only executing each branch of code but also evaluating all clauses in conditions separately. This is not guaranteed by other coverage criteria because short-circuiting conditions may not evaluate all their clauses, even if there are test cases for the true and false cases.
 
-We will design test cases for logical expression coverage based on the condition in the code shown in \vref{lst:logical_expression_code}.
+We will design test cases for logical expression coverage based on the condition in the code shown in listing \ref{lst:logical_expression_code}.
 
 The individual clauses are:\\
 $
