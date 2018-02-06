@@ -217,12 +217,8 @@ We organized our peer review sessions by picking suitable code snippets for each
 The code snippet we prepared is shown below.
 
 \bigskip
-\begin{lstlisting}[language=C++,
-					numbers=left,
+\begin{lstlisting}[numbers=left,
 					firstnumber=171,
-					directivestyle={\color{black}}
-					emph={int,char,double,float,unsigned},
-					emphstyle={\color{blue}},
 					title=src/eos\_specific/EosCue.cpp]
 void EosCue::createCueBlock() {
   EosCueBlock* block = qobject_cast<EosCueBlock*>(m_controller->blockManager()->addNewBlock("Eos Cue"));
@@ -370,13 +366,7 @@ In addition to the combination of ASA and human-based reviews, testing can also 
 As an example bug we chose issue \#17\footnote{\url{https://github.com/ETCLabs/LuminosusEosEdition/issues/17}}. It describes a problem where the application sometimes crashes when receiving cue objects. The following lines of code caused this:
 
 \bigskip
-\begin{lstlisting}[language=C++,
-							numbers=left,
-							firstnumber=78,
-							directivestyle={\color{black}}
-							emph={int,char,double,float,unsigned},
-							emphstyle={\color{blue}},
-							title=src/OSCNetworkManager.cpp]
+\begin{lstlisting}[firstnumber=78, title=src/OSCNetworkManager.cpp]
 void onIncomingEosMessage(const EosOSCMessage& msg) {(*@\Suppressnumber@*)
     [...](*@\Reactivatenumber{92}@*)
     } else if (msg.path().size() <= 5) {
@@ -569,14 +559,7 @@ One approach to generate test cases for a function is Input Domain Modeling (IDM
 In this section we want to find test cases using IDM for the method \texttt{saveFile()} shown in listing \ref{lst:idm_code} and compare interface to functionality-based IDM.
 
 \bigskip
-\begin{lstlisting}[language=C++,
-							numbers=left,
-							firstnumber=47,
-							directivestyle={\color{black}}
-							emph={int,char,double,float,unsigned},
-							emphstyle={\color{blue}},
-							caption=src/FileSystemManager.h,
-							label=lst:idm_code]
+\begin{lstlisting}[firstnumber=47, caption=src/FileSystemManager.h, label=lst:idm_code]
 /**
 * @brief saveFile saves QByteArray object to a file in the data dir
 * It overwrites the file if it already exists.
@@ -629,14 +612,7 @@ $
 The predicate is $a \lor (\lnot b \land c)$.
 
 \bigskip
-\begin{lstlisting}[language=C++,
-					numbers=left,
-					firstnumber=123,
-					directivestyle={\color{black}}
-					emph={int,char,double,float,unsigned},
-					emphstyle={\color{blue}},
-					caption=qml/CustomControls/ComboBox2.qml,
-					label=lst:logical_expression_code]
+\begin{lstlisting}[firstnumber=123, caption=qml/CustomControls/ComboBox2.qml, label=lst:logical_expression_code]
 // if the index changed
 // or if it was not a tap and there is a DropDown item:
 if (indexChangedDuringTouch || (!isTap && dropDownItem)) {
@@ -970,7 +946,7 @@ At this point, we would like to mention that translating code comes with the ris
 
 We installed KLEE on a virtual Ubuntu machine, using the pre-build docker image provided in their manual. We had to modify our code translation, telling KLEE which variables should be tested (\texttt{klee\_make\_symbolic}). We ended up with the following code:
 
-\begin{lstlisting}[language=C, firstnumber=21]
+\begin{lstlisting}[firstnumber=21]
 void hsvToRgb(float h, float s, float v, float* r, float* g, float* b) {(*@\Suppressnumber@*)
 	[...](*@\Reactivatenumber{46}@*)
 }
