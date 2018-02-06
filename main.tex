@@ -271,7 +271,7 @@ While it is comfortable for the team members that these functions are integrated
 
 \subsubsection{SonarQube}
 
-Besides GitHub, SonarQube\footnote{\url{https://www.sonarqube.org}} is another excellent web based tool for reviewing code. In contrast to GitHub, SonarQube is not used as a repository host. What makes SonarQube still great is its build-in fault detection and static analysis. Thus, a reviewer can find any flaws very fast and also see, who authored the corresponding code. We will cover more of the automated static analysis feature of SonarQube in section \ref{sec:humand-based-vs-automated-sa}.
+Besides GitHub, SonarQube\footnote{\url{https://www.sonarqube.org}} is another excellent web based tool for reviewing code. In contrast to GitHub, SonarQube is not used as a repository host. What makes SonarQube still great is its build-in fault detection and static analysis. Thus, a reviewer can find any flaws very fast and also see, who authored the corresponding code. We will cover more of the automated static analysis feature of SonarQube in section \ref{sec:human-based-vs-automated-sa}.
 
 What we missed when we used SonarQube was the possibility to see the entire commited code at once. SonarQube only offers to jump to fault it detected, but has no possibility to see the entire commit.
 
@@ -344,7 +344,7 @@ Polyspace is the only tool that we evaluated which claims to have zero optimisti
 A tool that is specialized in style guide checks is Googles cpplint.py\footnote{\url{https://github.com/google/styleguide/tree/gh-pages/cpplint}}. Even while this projects style guide differs from Googles, the tool can give some interesting hints. As an example, it was able to find missing includes that the other tools did not report. This is a valuable addition and shows again, that in the case of automated static analysis it is better to use a bunch of tools instead relying on a single one.
 
 \section{Interaction between Human-Based and Automated SA}
-\label{sec:humand-based-vs-automated-sa}
+\label{sec:human-based-vs-automated-sa}
 
 \begin{figure}[h]
 	\centering
